@@ -1,0 +1,8 @@
+{
+   "koushoku.dll" : {
+      "baseUrl" : "https://koushoku.org",
+      "language" : "en",
+      "name" : "Koushoku",
+      "version" : "0.1.0"
+   }
+}

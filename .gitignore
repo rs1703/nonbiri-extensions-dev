@@ -1,6 +1,7 @@
 build
 _builds
 .xmake
+libs
 
 # Prerequisites
 *.d

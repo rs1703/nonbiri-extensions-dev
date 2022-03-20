@@ -50,7 +50,6 @@ jobs:
           bash ./build.sh
 
       - uses: actions/upload-artifact@v3
-        if: "github.repository == 'rs1703/nonbiri-extensions-dev'"
         with:
           name: linux
           path: build/linux/*.so
@@ -72,7 +71,7 @@ jobs:
           ref: releases
 
       - run: |
-          mkdir linux || true
+          mkdir -p linux
           cp -r ~/tmp/linux/* $PWD/linux
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"

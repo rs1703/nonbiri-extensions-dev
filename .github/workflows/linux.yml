@@ -72,9 +72,10 @@ jobs:
 
       - run: |
           cp -r ~/tmp/linux $PWD
+          sudo chmod +x index
           ./index linux
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add .
+          git add linux linux.json
           git commit -m "Update extensions (linux)" || true
           git push || true

@@ -60,9 +60,27 @@ jobs:
 
       - run: |
           cp -r ~/tmp/windows $PWD
-          index.exe windows
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add .
+          git add windows
           git commit -m "Update extensions (windows)" || true
+          git push || true
+
+  index:
+    if: "github.repository == 'rs1703/nonbiri-extensions-dev'"
+    name: Index
+    runs-on: windows-2019
+    needs: publish
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: releases
+
+      - run: |
+          .\index.exe windows
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add windows.json
+          git commit -m "Update windows.json" || true
           git push || true

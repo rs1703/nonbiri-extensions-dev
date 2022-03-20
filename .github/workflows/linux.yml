@@ -70,10 +70,14 @@ jobs:
         with:
           ref: releases
 
-      - run: |
-          cp -r ~/tmp/linux $PWD
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add .
-          git commit -m "Update extensions (linux)" || true
-          git push || true
+      - run: cp -r ~/tmp/linux $PWD
+      - run: ls
+      - run: ls -l
+
+      - run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - run: git config --global user.name "github-actions[bot]"
+      - run: git status
+      - run: git add .
+      - run: git status
+      - run: git commit -m "Update extensions (linux)"
+      - run: git push

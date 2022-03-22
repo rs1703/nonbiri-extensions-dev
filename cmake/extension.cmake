@@ -7,4 +7,4 @@ target_compile_definitions(
     VERSION="${version}"
     USE_API="${useApi}"
 )
-target_compile_features(${libName} PRIVATE cxx_std_17)
+target_compile_features(${id} PRIVATE cxx_std_17)

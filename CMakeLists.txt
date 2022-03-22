@@ -44,7 +44,7 @@ foreach(extension ${extensions})
   set(name "")
   set(language en)
   set(version 0.1.0)
-  set(useApi false)
+  set(useApi 0)
   
   include(${extension}/CMakeLists.txt)
   include(${CMAKE_CURRENT_LIST_DIR}/cmake/extension.cmake)

@@ -40,10 +40,10 @@ set(deps
 
 file(GLOB extensions extensions/*)
 foreach(extension ${extensions})
-  set(extName "")
-  set(libName "")
-  set(version 0.1.0)
+  set(id "")
+  set(name "")
   set(language en)
+  set(version 0.1.0)
   set(useApi false)
   
   include(${extension}/CMakeLists.txt)

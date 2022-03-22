@@ -1,7 +1,8 @@
 target_compile_definitions(
-    ${libName} PRIVATE
+    ${id} PRIVATE
+    ID="${id}"
+    NAME="${name}"
     BASE_URL="${baseUrl}"
-    NAME="${extName}"
     LANGUAGE="${language}"
     VERSION="${version}"
     USE_API="${useApi}"

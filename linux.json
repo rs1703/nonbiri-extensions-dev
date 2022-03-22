@@ -1,8 +1,8 @@
 {
    "libkoushoku.so" : {
-      "baseUrl" : "https://koushoku.org",
-      "language" : "en",
-      "name" : "Koushoku",
-      "version" : "0.1.0"
+      "baseUrl" : "koushoku",
+      "language" : "Koushoku",
+      "name" : "https://koushoku.org",
+      "version" : "en"
    }
 }

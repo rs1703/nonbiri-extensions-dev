@@ -9,20 +9,20 @@ public:
   std::string latestsSelector();
   std::string latestsNextSelector();
   std::string latestsRequest(int page);
-  Manga *parseLatestEntry(CElement &element);
+  Manga *parseLatestEntry(Element &element);
 
   std::string searchMangaSelector();
   std::string searchMangaNextSelector();
   std::string searchMangaRequest(int page, const std::string &query);
-  Manga *parseSearchEntry(CElement &element);
+  Manga *parseSearchEntry(Element &element);
 
-  Manga *parseManga(CHtml &html);
+  Manga *parseManga(HTML &html);
 
   std::string chaptersRequest(const Manga &manga);
-  std::vector<Chapter *> parseChapterEntries(const Manga &manga, CHtml &html);
+  std::vector<Chapter *> parseChapterEntries(const Manga &manga, HTML &html);
 
   std::string pagesRequest(const std::string &path);
-  std::vector<std::string> parsePages(CHtml &html);
+  std::vector<std::string> parsePages(HTML &html);
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

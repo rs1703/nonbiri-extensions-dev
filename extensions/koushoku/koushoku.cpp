@@ -22,7 +22,7 @@ std::string Koushoku::latestsRequest(int page)
   return http::get(baseUrl + "/?page=" + std::to_string(page));
 }
 
-Manga *Koushoku::parseLatestEntry(CElement &element)
+Manga *Koushoku::parseLatestEntry(Element &element)
 {
   auto manga = new Manga();
 
@@ -48,12 +48,12 @@ std::string Koushoku::searchMangaRequest(int page, const std::string &query)
   return http::get(baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query);
 }
 
-Manga *Koushoku::parseSearchEntry(CElement &element)
+Manga *Koushoku::parseSearchEntry(Element &element)
 {
   return parseLatestEntry(element);
 }
 
-Manga *Koushoku::parseManga(CHtml &html)
+Manga *Koushoku::parseManga(HTML &html)
 {
   auto manga = new Manga();
 
@@ -82,7 +82,7 @@ std::string Koushoku::chaptersRequest(const Manga &manga)
   return http::get(prependBaseUrl(manga.path));
 }
 
-std::vector<Chapter *> Koushoku::parseChapterEntries(const Manga &manga, CHtml &html)
+std::vector<Chapter *> Koushoku::parseChapterEntries(const Manga &manga, HTML &html)
 {
   auto chapter = new Chapter();
   std::vector<Chapter *> chapters {chapter};
@@ -99,7 +99,7 @@ std::string Koushoku::pagesRequest(const std::string &path)
   return http::get(prependBaseUrl(path) + "/1");
 }
 
-std::vector<std::string> Koushoku::parsePages(CHtml &html)
+std::vector<std::string> Koushoku::parsePages(HTML &html)
 {
   auto total = std::stoi(html.selectFirst(".total")->text());
   if (total == 0)

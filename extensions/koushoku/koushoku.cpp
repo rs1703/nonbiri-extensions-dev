@@ -43,7 +43,7 @@ std::string Koushoku::searchMangaNextSelector()
   return latestsNextSelector();
 }
 
-std::string Koushoku::searchMangaRequest(int page, const char *query)
+std::string Koushoku::searchMangaRequest(int page, const std::string &query)
 {
   return http::get(baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query);
 }

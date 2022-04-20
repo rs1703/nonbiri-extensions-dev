@@ -13,7 +13,7 @@ public:
 
   std::string searchMangaSelector();
   std::string searchMangaNextSelector();
-  std::string searchMangaRequest(int page, const char *query);
+  std::string searchMangaRequest(int page, const std::string &query);
   Manga *parseSearchEntry(CElement &element);
 
   Manga *parseManga(CHtml &html);

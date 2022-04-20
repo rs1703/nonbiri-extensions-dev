@@ -21,8 +21,8 @@ public:
   std::string chaptersRequest(const Manga &manga);
   std::vector<Chapter *> parseChapterEntries(const Manga &manga, CHtml &html);
 
-  std::string pagesRequest(const Chapter &chapter);
-  std::vector<std::string> parsePages(const Chapter &chapter, CHtml &html);
+  std::string pagesRequest(const std::string &path);
+  std::vector<std::string> parsePages(CHtml &html);
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

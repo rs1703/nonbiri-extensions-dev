@@ -5,7 +5,7 @@
 
 class Koushoku : public Extension
 {
-  std::vector<FilterInfo> filters;
+  std::vector<Filter> filters;
 
 public:
   Koushoku();
@@ -17,7 +17,7 @@ public:
 
   std::string searchMangaSelector();
   std::string searchMangaNextSelector();
-  std::string searchMangaRequest(int page, const std::string &query, const std::vector<Filter> &filters);
+  std::string searchMangaRequest(int page, const std::string &query, const std::vector<FilterKV> &filters);
   Manga *parseSearchEntry(Element &element);
 
   Manga *parseManga(HTML &html);
@@ -28,7 +28,7 @@ public:
   std::string pagesRequest(const std::string &path);
   std::vector<std::string> parsePages(HTML &html);
 
-  const std::vector<FilterInfo> &getFilters();
+  const std::vector<Filter> &getFilters();
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

@@ -8,7 +8,7 @@ RegisterExtension(Koushoku);
 Koushoku::Koushoku() : Extension()
 {
   filters = {
-    {
+    Select {
       "Sort",
       "sort",
       {
@@ -18,7 +18,7 @@ Koushoku::Koushoku() : Extension()
         {"Published date", "published_at"},
       },
     },
-    {
+    Select {
       "Order",
       "order",
       {
@@ -65,7 +65,7 @@ std::string Koushoku::searchMangaNextSelector()
   return latestsNextSelector();
 }
 
-std::string Koushoku::searchMangaRequest(int page, const std::string &query, const std::vector<Filter> &filters)
+std::string Koushoku::searchMangaRequest(int page, const std::string &query, const std::vector<FilterKV> &filters)
 {
   std::string url {baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query};
   for (auto &filter : filters)
@@ -143,7 +143,7 @@ std::vector<std::string> Koushoku::parsePages(HTML &html)
   return pages;
 }
 
-const std::vector<FilterInfo> &Koushoku::getFilters()
+const std::vector<Filter> &Koushoku::getFilters()
 {
   return filters;
 }

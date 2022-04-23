@@ -1,4 +1,4 @@
-#include <core/utils/utils.h>
+#include <core/utils.h>
 #include <koushoku/koushoku.h>
 
 const char *thumbnailSelector = ".thumbnail img";

@@ -56,9 +56,9 @@ endif()
 file(GLOB GUMBO_QUERY_SOURCES libs/nonbiri-core-dev/libs/gumbo-query/src/*.cpp)
 set(DEPS
   ${GUMBO_QUERY_SOURCES}
-  libs/nonbiri-core-dev/core/extension/extension.cpp
-  libs/nonbiri-core-dev/core/parser/parser.cpp
-  libs/nonbiri-core-dev/core/utils/utils.cpp)
+  libs/nonbiri-core-dev/core/extension.cpp
+  libs/nonbiri-core-dev/core/parser.cpp
+  libs/nonbiri-core-dev/core/utils.cpp)
 
 include_directories(
   ${CMAKE_CURRENT_LIST_DIR}/extensions

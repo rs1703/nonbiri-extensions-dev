@@ -1,7 +1,7 @@
 #ifndef KOUSHOKU_KOUSHOKU_H_
 #define KOUSHOKU_KOUSHOKU_H_
 
-#include <core/extension/extension.h>
+#include <core/extension.h>
 
 class Koushoku : public Extension
 {

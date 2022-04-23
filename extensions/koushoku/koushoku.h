@@ -5,7 +5,11 @@
 
 class Koushoku : public Extension
 {
+  std::vector<FilterInfo> filters;
+
 public:
+  Koushoku();
+
   std::string latestsSelector();
   std::string latestsNextSelector();
   std::string latestsRequest(int page);

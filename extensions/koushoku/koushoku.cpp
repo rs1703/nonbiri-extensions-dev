@@ -1,11 +1,33 @@
-#include <stdexcept>
-
 #include <core/utils/utils.h>
 #include <koushoku/koushoku.h>
 
 const char *thumbnailSelector = ".thumbnail img";
 
 RegisterExtension(Koushoku);
+
+Koushoku::Koushoku() : Extension()
+{
+  filters = {
+    {
+      "Sort",
+      "sort",
+      {
+        {"ID", "id"},
+        {"Title", "title"},
+        {"Created date", "created_at"},
+        {"Published date", "published_at"},
+      },
+    },
+    {
+      "Order",
+      "order",
+      {
+        {"Ascending", "asc"},
+        {"Descending", "desc"},
+      },
+    },
+  };
+}
 
 std::string Koushoku::latestsSelector()
 {
@@ -123,25 +145,5 @@ std::vector<std::string> Koushoku::parsePages(HTML &html)
 
 const std::vector<FilterInfo> &Koushoku::getFilters()
 {
-  static const std::vector<FilterInfo> filters {
-    {
-      "Sort",
-      "sort",
-      {
-        {"ID", "id"},
-        {"Title", "title"},
-        {"Created date", "created_at"},
-        {"Published date", "published_at"},
-      },
-    },
-    {
-      "Order",
-      "order",
-      {
-        {"Ascending", "asc"},
-        {"Descending", "desc"},
-      },
-    },
-  };
   return filters;
 }

@@ -13,7 +13,7 @@ public:
 
   std::string searchMangaSelector();
   std::string searchMangaNextSelector();
-  std::string searchMangaRequest(int page, const std::string &query);
+  std::string searchMangaRequest(int page, const std::string &query, const std::vector<Filter> &filters);
   Manga *parseSearchEntry(Element &element);
 
   Manga *parseManga(HTML &html);
@@ -23,6 +23,8 @@ public:
 
   std::string pagesRequest(const std::string &path);
   std::vector<std::string> parsePages(HTML &html);
+
+  const std::vector<FilterInfo> &getFilters();
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

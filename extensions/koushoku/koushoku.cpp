@@ -43,9 +43,13 @@ std::string Koushoku::searchMangaNextSelector()
   return latestsNextSelector();
 }
 
-std::string Koushoku::searchMangaRequest(int page, const std::string &query)
+std::string Koushoku::searchMangaRequest(int page, const std::string &query, const std::vector<Filter> &filters)
 {
-  return http::get(baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query);
+  std::string url {baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query};
+  for (auto &filter : filters)
+    url += "&" + filter.key + "=" + filter.value;
+
+  return http::get(url);
 }
 
 Manga *Koushoku::parseSearchEntry(Element &element)
@@ -115,4 +119,29 @@ std::vector<std::string> Koushoku::parsePages(HTML &html)
   for (int i = 1; i <= total; i++)
     pages.push_back(origin + "/data/" + id + "/" + std::to_string(i) + ".jpg");
   return pages;
+}
+
+const std::vector<FilterInfo> &Koushoku::getFilters()
+{
+  static const std::vector<FilterInfo> filters {
+    {
+      "Sort",
+      "sort",
+      {
+        {"ID", "id"},
+        {"Title", "title"},
+        {"Created date", "created_at"},
+        {"Published date", "published_at"},
+      },
+    },
+    {
+      "Order",
+      "order",
+      {
+        {"Ascending", "asc"},
+        {"Descending", "desc"},
+      },
+    },
+  };
+  return filters;
 }

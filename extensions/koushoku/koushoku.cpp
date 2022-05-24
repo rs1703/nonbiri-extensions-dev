@@ -44,9 +44,9 @@ std::string Koushoku::latestsRequest(int page)
   return http::get(baseUrl + "/?page=" + std::to_string(page));
 }
 
-Manga *Koushoku::parseLatestEntry(Element &element)
+Manga_t *Koushoku::parseLatestEntry(Element &element)
 {
-  auto manga = new Manga();
+  auto manga = new Manga_t();
 
   manga->path = stripDomain(element.selectFirst("a")->attr("href"));
   manga->coverUrl = element.selectFirst(thumbnailSelector)->attr("src");
@@ -74,14 +74,14 @@ std::string Koushoku::searchMangaRequest(int page, const std::string &query, con
   return http::get(url);
 }
 
-Manga *Koushoku::parseSearchEntry(Element &element)
+Manga_t *Koushoku::parseSearchEntry(Element &element)
 {
   return parseLatestEntry(element);
 }
 
-Manga *Koushoku::parseManga(HTML &html)
+Manga_t *Koushoku::parseManga(HTML &html)
 {
-  auto manga = new Manga();
+  auto manga = new Manga_t();
 
   manga->path = stripDomain(html.selectFirst("link[rel=canonical]")->attr("href"));
   manga->coverUrl = html.selectFirst(thumbnailSelector)->attr("src");
@@ -103,18 +103,18 @@ Manga *Koushoku::parseManga(HTML &html)
   return manga;
 }
 
-std::string Koushoku::chaptersRequest(const Manga &manga)
+std::string Koushoku::chaptersRequest(const Manga_t &manga)
 {
   return http::get(prependBaseUrl(manga.path));
 }
 
-std::vector<Chapter *> Koushoku::parseChapterEntries(const Manga &manga, HTML &html)
+std::vector<Chapter_t *> Koushoku::parseChapterEntries(const Manga_t &manga, HTML &html)
 {
-  auto chapter = new Chapter();
-  std::vector<Chapter *> chapters {chapter};
+  auto chapter = new Chapter_t();
+  std::vector<Chapter_t *> chapters {chapter};
 
   chapter->path = manga.path;
-  chapter->name = "Chapter";
+  chapter->name = "Chapter_t";
   chapter->publishedAt = std::stoll(html.selectFirst(".metadata .published td:nth-child(2)")->attr("data-unix")) * 1000;
 
   return chapters;

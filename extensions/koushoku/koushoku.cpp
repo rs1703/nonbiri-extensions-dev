@@ -114,7 +114,7 @@ std::vector<Chapter_t *> Koushoku::parseChapterEntries(const Manga_t &manga, HTM
   std::vector<Chapter_t *> chapters {chapter};
 
   chapter->path = manga.path;
-  chapter->name = "Chapter_t";
+  chapter->name = "Chapter";
   chapter->publishedAt = std::stoll(html.selectFirst(".metadata .published td:nth-child(2)")->attr("data-unix")) * 1000;
 
   return chapters;

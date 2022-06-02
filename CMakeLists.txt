@@ -9,57 +9,14 @@ HunterGate(
 project(nonbiri-dev LANGUAGES C CXX)
 include(FindPkgConfig)
 
-# Packages ===================================
-
-add_definitions(-DCURL_STATICLIB)
-pkg_check_modules(CURL libcurl)
-if(CURL_FOUND)
-  include_directories(${CURL_INCLUDE_DIR})
-
-  link_libraries(${CURL_LIBRARIES})
-else()
-  unset(CURL_FOUND CACHE)
-  hunter_add_package(CURL)
-  find_package(CURL CONFIG REQUIRED)
-
-  link_libraries(CURL::libcurl)
-endif()
-
-pkg_check_modules(JSONCPP jsoncpp)
-if(JSONCPP_FOUND)
-  include_directories(${JSONCPP_INCLUDE_DIR})
-
-  link_libraries(${JSONCPP_LIBRARIES})
-else()
-  unset(JSONCPP_FOUND CACHE)
-  hunter_add_package(jsoncpp)
-  find_package(jsoncpp CONFIG REQUIRED)
-
-  link_libraries(jsoncpp_lib_static)
-endif()
-
-pkg_check_modules(GUMBO gumbo)
-if(GUMBO_FOUND)
-  include_directories(${GUMBO_INCLUDE_DIR})
-
-  link_libraries(${GUMBO_LIBRARIES})
-else()
-  unset(GUMBO_FOUND CACHE)
-  hunter_add_package(gumbo)
-  find_package(gumbo CONFIG REQUIRED)
-
-  link_libraries(gumbo::gumbo)
-endif()
-
 # Deps =======================================
 
 file(GLOB GUMBO_QUERY_SOURCES libs/nonbiri-core-dev/libs/gumbo-query/src/*.cpp)
-set(DEPS
+file(GLOB CORE_SOURCES libs/nonbiri-core-dev/core/*.cpp)
+
+set(DEPENDENCIES
   ${GUMBO_QUERY_SOURCES}
-  libs/nonbiri-core-dev/core/extension.cpp
-  libs/nonbiri-core-dev/core/filters.cpp
-  libs/nonbiri-core-dev/core/parser.cpp
-  libs/nonbiri-core-dev/core/utils.cpp)
+  ${CORE_SOURCES})
 
 include_directories(
   ${CMAKE_CURRENT_LIST_DIR}/extensions
@@ -67,16 +24,52 @@ include_directories(
   libs/nonbiri-core-dev/libs
   libs/nonbiri-core-dev)
 
+# Packages ===================================
+
+if(UNIX)
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+
+  set(LIBRARIES ${LIBRARIES} Threads::Threads -ldl)
+endif()
+
+pkg_check_modules(JSONCPP jsoncpp)
+if(JSONCPP_FOUND)
+  include_directories(${JSONCPP_INCLUDE_DIR})
+
+  set(LIBRARIES ${LIBRARIES} ${JSONCPP_LIBRARIES})
+else()
+  unset(JSONCPP_FOUND CACHE)
+  hunter_add_package(jsoncpp)
+  find_package(jsoncpp CONFIG REQUIRED)
+
+  set(LIBRARIES ${LIBRARIES} jsoncpp_lib_static)
+endif()
+
+pkg_check_modules(GUMBO gumbo)
+if(GUMBO_FOUND)
+  include_directories(${GUMBO_INCLUDE_DIR})
+
+  set(LIBRARIES ${LIBRARIES} ${GUMBO_LIBRARIES})
+else()
+  unset(GUMBO_FOUND CACHE)
+  hunter_add_package(gumbo)
+  find_package(gumbo CONFIG REQUIRED)
+
+  set(LIBRARIES ${LIBRARIES} gumbo::gumbo)
+endif()
+
 # Extensions =======================================
 
 file(GLOB extensions extensions/*)
 foreach(extension ${extensions})
-  set(id "")
-  set(name "")
-  set(language en)
-  set(version 0.1.0)
-  set(isNsfw 0)
-  set(useApi 0)
+  unset(id CACHE)
+  unset(name CACHE)
+  unset(baseUrl CACHE)
+  unset(language CACHE)
+  unset(version CACHE)
+  unset(isNsfw CACHE)
+  unset(useApi CACHE)
   
   include(${extension}/CMakeLists.txt)
   include(${CMAKE_CURRENT_LIST_DIR}/cmake/extension.cmake)

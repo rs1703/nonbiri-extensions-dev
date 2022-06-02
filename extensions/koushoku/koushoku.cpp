@@ -1,4 +1,3 @@
-#include <core/utils.h>
 #include <koushoku/koushoku.h>
 
 const char *thumbnailSelector = ".thumbnail img";
@@ -7,6 +6,7 @@ RegisterExtension(Koushoku);
 
 Koushoku::Koushoku() : Extension()
 {
+  http = HttpClient(new RateLimiter(5));
   filters = {
     Select {
       "Sort",
@@ -29,24 +29,24 @@ Koushoku::Koushoku() : Extension()
   };
 }
 
-std::string Koushoku::latestsSelector()
+std::string Koushoku::latestsSelector() const
 {
   return "#archives.feed .entries > .entry";
 }
 
-std::string Koushoku::latestsNextSelector()
+std::string Koushoku::latestsNextSelector() const
 {
   return "#archives.feed .pagination .next";
 }
 
-std::string Koushoku::latestsRequest(int page)
+std::string Koushoku::latestsRequest(int page) const
 {
-  return http::get(baseUrl + "/?page=" + std::to_string(page));
+  return http.get(baseUrl + "/?page=" + std::to_string(page));
 }
 
-Manga_t *Koushoku::parseLatestEntry(Element &element)
+std::shared_ptr<Manga_t> Koushoku::parseLatestEntry(Element &element) const
 {
-  Manga_t *manga = new Manga_t();
+  auto manga = std::make_shared<Manga_t>();
   manga->path = stripDomain(element.selectFirst("a")->attr("href"));
   manga->coverUrl = element.selectFirst(thumbnailSelector)->attr("src");
   manga->title = element.selectFirst(".title")->text();
@@ -54,32 +54,32 @@ Manga_t *Koushoku::parseLatestEntry(Element &element)
   return manga;
 }
 
-std::string Koushoku::searchMangaSelector()
+std::string Koushoku::searchMangaSelector() const
 {
   return latestsSelector();
 }
 
-std::string Koushoku::searchMangaNextSelector()
+std::string Koushoku::searchMangaNextSelector() const
 {
   return latestsNextSelector();
 }
 
-std::string Koushoku::searchMangaRequest(int page, const std::string &query, const std::vector<FilterKV> &filters)
+std::string Koushoku::searchMangaRequest(int page, const std::string &query, const std::vector<FilterKV> &filters) const
 {
   std::string url = baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query;
   for (auto &filter : filters)
     url += "&" + filter.key + "=" + filter.value;
-  return http::get(url);
+  return http.get(url);
 }
 
-Manga_t *Koushoku::parseSearchEntry(Element &element)
+std::shared_ptr<Manga_t> Koushoku::parseSearchEntry(Element &element) const
 {
   return parseLatestEntry(element);
 }
 
-Manga_t *Koushoku::parseManga(HTML &html)
+std::shared_ptr<Manga_t> Koushoku::parseManga(HTML &html) const
 {
-  Manga_t *manga = new Manga_t();
+  auto manga = std::make_shared<Manga_t>();
   manga->path = stripDomain(html.selectFirst("link[rel=canonical]")->attr("href"));
   manga->coverUrl = html.selectFirst(thumbnailSelector)->attr("src");
   manga->title = html.selectFirst(".metadata .title")->text();
@@ -98,15 +98,15 @@ Manga_t *Koushoku::parseManga(HTML &html)
   return manga;
 }
 
-std::string Koushoku::chaptersRequest(const Manga_t &manga)
+std::string Koushoku::chaptersRequest(const Manga_t &manga) const
 {
-  return http::get(prependBaseUrl(manga.path));
+  return http.get(prependBaseUrl(manga.path));
 }
 
-std::vector<Chapter_t *> Koushoku::parseChapterEntries(const Manga_t &manga, HTML &html)
+std::vector<std::shared_ptr<Chapter_t>> Koushoku::parseChapterEntries(const Manga_t &manga, HTML &html) const
 {
-  Chapter_t *chapter = new Chapter_t();
-  std::vector<Chapter_t *> chapters {chapter};
+  auto chapter = std::make_shared<Chapter_t>();
+  std::vector<std::shared_ptr<Chapter_t>> chapters {chapter};
 
   chapter->path = manga.path;
   chapter->name = "Chapter";
@@ -114,12 +114,12 @@ std::vector<Chapter_t *> Koushoku::parseChapterEntries(const Manga_t &manga, HTM
   return chapters;
 }
 
-std::string Koushoku::pagesRequest(const std::string &path)
+std::string Koushoku::pagesRequest(const std::string &path) const
 {
-  return http::get(prependBaseUrl(path) + "/1");
+  return http.get(prependBaseUrl(path) + "/1");
 }
 
-std::vector<std::string> Koushoku::parsePages(HTML &html)
+std::vector<std::string> Koushoku::parsePages(HTML &html) const
 {
   auto total = std::stoi(html.selectFirst(".total")->text());
   if (total == 0)
@@ -128,14 +128,14 @@ std::vector<std::string> Koushoku::parsePages(HTML &html)
   if (id.empty())
     throw std::runtime_error("Unknown archive id");
 
-  std::vector<std::string> pages;
+  std::vector<std::string> pages {};
   auto origin = stripPath(html.selectFirst(".page img")->attr("src"));
   for (int i = 1; i <= total; i++)
     pages.push_back(origin + "/data/" + id + "/" + std::to_string(i) + ".jpg");
   return pages;
 }
 
-const std::vector<Filter> &Koushoku::getFilters()
+const std::vector<Filter> &Koushoku::getFilters() const
 {
   return filters;
 }

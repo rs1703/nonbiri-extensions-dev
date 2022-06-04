@@ -6,7 +6,7 @@ RegisterExtension(Koushoku);
 
 Koushoku::Koushoku() : Extension()
 {
-  http = HttpClient(new RateLimiter(5));
+  client.rateLimiter = new Http::RateLimiter(5);
   filters = {
     Select {
       "Sort",
@@ -39,15 +39,15 @@ std::string Koushoku::latestsNextSelector() const
   return "#archives.feed .pagination .next";
 }
 
-std::string Koushoku::latestsRequest(int page) const
+std::shared_ptr<Http::Response> Koushoku::latestsRequest(int page) const
 {
-  return http.get(baseUrl + "/?page=" + std::to_string(page));
+  return client.get(baseUrl + "/?page=" + std::to_string(page));
 }
 
 std::shared_ptr<Manga_t> Koushoku::parseLatestEntry(Element &element) const
 {
   auto manga = std::make_shared<Manga_t>();
-  manga->path = stripDomain(element.selectFirst("a")->attr("href"));
+  manga->path = Utils::stripDomain(element.selectFirst("a")->attr("href"));
   manga->coverUrl = element.selectFirst(thumbnailSelector)->attr("src");
   manga->title = element.selectFirst(".title")->text();
 
@@ -64,12 +64,14 @@ std::string Koushoku::searchMangaNextSelector() const
   return latestsNextSelector();
 }
 
-std::string Koushoku::searchMangaRequest(int page, const std::string &query, const std::vector<FilterKV> &filters) const
+std::shared_ptr<Http::Response> Koushoku::searchMangaRequest(int page,
+                                                             const std::string &query,
+                                                             const std::vector<FilterKV> &filters) const
 {
   std::string url = baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query;
   for (auto &filter : filters)
     url += "&" + filter.key + "=" + filter.value;
-  return http.get(url);
+  return client.get(url);
 }
 
 std::shared_ptr<Manga_t> Koushoku::parseSearchEntry(Element &element) const
@@ -80,7 +82,7 @@ std::shared_ptr<Manga_t> Koushoku::parseSearchEntry(Element &element) const
 std::shared_ptr<Manga_t> Koushoku::parseManga(HTML &html) const
 {
   auto manga = std::make_shared<Manga_t>();
-  manga->path = stripDomain(html.selectFirst("link[rel=canonical]")->attr("href"));
+  manga->path = Utils::stripDomain(html.selectFirst("link[rel=canonical]")->attr("href"));
   manga->coverUrl = html.selectFirst(thumbnailSelector)->attr("src");
   manga->title = html.selectFirst(".metadata .title")->text();
   manga->status = MangaStatus::Completed;
@@ -98,9 +100,9 @@ std::shared_ptr<Manga_t> Koushoku::parseManga(HTML &html) const
   return manga;
 }
 
-std::string Koushoku::chaptersRequest(const Manga_t &manga) const
+std::shared_ptr<Http::Response> Koushoku::chaptersRequest(const Manga_t &manga) const
 {
-  return http.get(prependBaseUrl(manga.path));
+  return client.get(prependBaseUrl(manga.path));
 }
 
 std::vector<std::shared_ptr<Chapter_t>> Koushoku::parseChapterEntries(const Manga_t &manga, HTML &html) const
@@ -114,9 +116,9 @@ std::vector<std::shared_ptr<Chapter_t>> Koushoku::parseChapterEntries(const Mang
   return chapters;
 }
 
-std::string Koushoku::pagesRequest(const std::string &path) const
+std::shared_ptr<Http::Response> Koushoku::pagesRequest(const std::string &path) const
 {
-  return http.get(prependBaseUrl(path) + "/1");
+  return client.get(prependBaseUrl(path) + "/1");
 }
 
 std::vector<std::string> Koushoku::parsePages(HTML &html) const
@@ -129,7 +131,7 @@ std::vector<std::string> Koushoku::parsePages(HTML &html) const
     throw std::runtime_error("Unknown archive id");
 
   std::vector<std::string> pages {};
-  auto origin = stripPath(html.selectFirst(".page img")->attr("src"));
+  auto origin = Utils::stripPath(html.selectFirst(".page img")->attr("src"));
   for (int i = 1; i <= total; i++)
     pages.push_back(origin + "/data/" + id + "/" + std::to_string(i) + ".jpg");
   return pages;

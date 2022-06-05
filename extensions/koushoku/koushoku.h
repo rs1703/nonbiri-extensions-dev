@@ -10,27 +10,27 @@ class Koushoku : public Extension
 public:
   Koushoku();
 
-  std::string latestsSelector() const;
-  std::string latestsNextSelector() const;
-  std::shared_ptr<Http::Response> latestsRequest(int page) const;
-  std::shared_ptr<Manga_t> parseLatestEntry(Element &element) const;
+  std::string latestsSelector() const override;
+  std::string latestsNextSelector() const override;
+  std::shared_ptr<Http::Response> latestsRequest(int page) const override;
+  std::shared_ptr<Manga_t> parseLatestEntry(Element &element) const override;
 
-  std::string searchMangaSelector() const;
-  std::string searchMangaNextSelector() const;
+  std::string searchMangaSelector() const override;
+  std::string searchMangaNextSelector() const override;
   std::shared_ptr<Http::Response> searchMangaRequest(int page,
                                                      const std::string &query,
                                                      const std::vector<FilterKV> &filters) const;
-  std::shared_ptr<Manga_t> parseSearchEntry(Element &element) const;
+  std::shared_ptr<Manga_t> parseSearchEntry(Element &element) const override;
 
-  std::shared_ptr<Manga_t> parseManga(HTML &html) const;
+  std::shared_ptr<Manga_t> parseManga(HTML &html) const override;
 
-  std::shared_ptr<Http::Response> chaptersRequest(const Manga_t &manga) const;
-  std::vector<std::shared_ptr<Chapter_t>> parseChapterEntries(const Manga_t &manga, HTML &html) const;
+  std::shared_ptr<Http::Response> chaptersRequest(const Manga_t &manga) const override;
+  std::vector<std::shared_ptr<Chapter_t>> parseChapterEntries(const Manga_t &manga, HTML &html) const override;
 
-  std::shared_ptr<Http::Response> pagesRequest(const std::string &path) const;
-  std::vector<std::string> parsePages(HTML &html) const;
+  std::shared_ptr<Http::Response> pagesRequest(const std::string &path) const override;
+  std::vector<std::string> parsePages(HTML &html) const override;
 
-  const std::vector<Filter> &getFilters() const;
+  const std::vector<Filter> &getFilters() const override;
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

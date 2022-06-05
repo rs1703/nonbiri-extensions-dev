@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <koushoku/koushoku.h>
 
 const char *thumbnailSelector = ".thumbnail img";
@@ -6,7 +8,7 @@ RegisterExtension(Koushoku);
 
 Koushoku::Koushoku() : Extension()
 {
-  client.rateLimiter = new Http::RateLimiter(5);
+  client.setRateLimiter(new Http::RateLimiter(5));
   filters = {
     Select {
       "Sort",

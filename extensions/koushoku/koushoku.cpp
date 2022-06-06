@@ -6,29 +6,58 @@ const char *thumbnailSelector = ".thumbnail img";
 
 RegisterExtension(Koushoku);
 
-Koushoku::Koushoku() : Extension()
+const Pref sortPref {
+  .key         = "sort",
+  .title       = "Sort",
+  .description = "Default sorting behavior",
+  .value       = "id",
+  .options =
+    {
+      {"ID", "id"},
+      {"Title", "title"},
+      {"Created Date", "created_at"},
+      {"Uploaded Date", "published_at"},
+      {"Pages", "pages"},
+      {"Title", "title"},
+    },
+};
+
+const Pref orderPref {
+  .key         = "order",
+  .title       = "Order",
+  .description = "Default order behavior",
+  .value       = "desc",
+  .options =
+    {
+      {"Ascending", "asc"},
+      {"Descending", "desc"},
+    },
+};
+
+Koushoku::Koushoku() : Extension {}, Prefs {*this, {sortPref, orderPref}}
 {
   client.setRateLimiter(new Http::RateLimiter(5));
-  filters = {
-    Select {
-      "Sort",
-      "sort",
-      {
-        {"ID", "id"},
-        {"Title", "title"},
-        {"Created date", "created_at"},
-        {"Published date", "published_at"},
-      },
+  filters.add(Select {
+    "sort",  // key
+    "Sort",  // title
+    {
+      // options
+      {"ID", "id"},
+      {"Title", "title"},
+      {"Created Date", "created_at", true},
+      {"Uploaded Date", "published_at"},
+      {"Pages", "pages"},
     },
-    Select {
-      "Order",
-      "order",
-      {
-        {"Ascending", "asc"},
-        {"Descending", "desc"},
-      },
+  });
+  filters.add(Select {
+    "order",  // key
+    "Order",  // title
+    {
+      //  options
+      {"Ascending", "asc"},
+      {"Descending", "desc", true},
     },
-  };
+  });
 }
 
 std::string Koushoku::latestsSelector() const
@@ -48,11 +77,10 @@ std::shared_ptr<Http::Response> Koushoku::latestsRequest(int page) const
 
 std::shared_ptr<Manga_t> Koushoku::parseLatestEntry(Element &element) const
 {
-  auto manga = std::make_shared<Manga_t>();
-  manga->path = Utils::stripDomain(element.selectFirst("a")->attr("href"));
+  auto manga      = std::make_shared<Manga_t>();
+  manga->path     = Utils::stripDomain(element.selectFirst("a")->attr("href"));
   manga->coverUrl = element.selectFirst(thumbnailSelector)->attr("src");
-  manga->title = element.selectFirst(".title")->text();
-
+  manga->title    = element.selectFirst(".title")->text();
   return manga;
 }
 
@@ -66,9 +94,8 @@ std::string Koushoku::searchMangaNextSelector() const
   return latestsNextSelector();
 }
 
-std::shared_ptr<Http::Response> Koushoku::searchMangaRequest(int page,
-                                                             const std::string &query,
-                                                             const std::vector<FilterKV> &filters) const
+std::shared_ptr<Http::Response> Koushoku::searchMangaRequest(
+  int page, const std::string &query, const std::vector<Filter::Pair> &filters) const
 {
   std::string url = baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query;
   for (auto &filter : filters)
@@ -83,11 +110,11 @@ std::shared_ptr<Manga_t> Koushoku::parseSearchEntry(Element &element) const
 
 std::shared_ptr<Manga_t> Koushoku::parseManga(HTML &html) const
 {
-  auto manga = std::make_shared<Manga_t>();
-  manga->path = Utils::stripDomain(html.selectFirst("link[rel=canonical]")->attr("href"));
+  auto manga      = std::make_shared<Manga_t>();
+  manga->path     = Utils::stripDomain(html.selectFirst("link[rel=canonical]")->attr("href"));
   manga->coverUrl = html.selectFirst(thumbnailSelector)->attr("src");
-  manga->title = html.selectFirst(".metadata .title")->text();
-  manga->status = MangaStatus::Completed;
+  manga->title    = html.selectFirst(".metadata .title")->text();
+  manga->status   = MangaStatus::Completed;
 
   auto artistElements = html.select(".metadata .artists a");
   for (auto &artistElement : artistElements)
@@ -112,8 +139,8 @@ std::vector<std::shared_ptr<Chapter_t>> Koushoku::parseChapterEntries(const Mang
   auto chapter = std::make_shared<Chapter_t>();
   std::vector<std::shared_ptr<Chapter_t>> chapters {chapter};
 
-  chapter->path = manga.path;
-  chapter->name = "Chapter";
+  chapter->path        = manga.path;
+  chapter->name        = "Chapter";
   chapter->publishedAt = std::stoll(html.selectFirst(".metadata .published td:nth-child(2)")->attr("data-unix")) * 1000;
   return chapters;
 }
@@ -139,7 +166,7 @@ std::vector<std::string> Koushoku::parsePages(HTML &html) const
   return pages;
 }
 
-const std::vector<Filter> &Koushoku::getFilters() const
+Prefs *Koushoku::getPrefs() const
 {
-  return filters;
+  return Prefs::getInstance();
 }

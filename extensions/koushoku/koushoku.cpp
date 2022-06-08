@@ -108,6 +108,11 @@ std::shared_ptr<Manga_t> Koushoku::parseSearchEntry(Element &element) const
   return parseLatestEntry(element);
 }
 
+std::shared_ptr<Http::Response> Koushoku::mangaRequest(const std::string &path) const
+{
+  return client.get(prependBaseUrl(path));
+}
+
 std::shared_ptr<Manga_t> Koushoku::parseManga(HTML &html) const
 {
   auto manga      = std::make_shared<Manga_t>();

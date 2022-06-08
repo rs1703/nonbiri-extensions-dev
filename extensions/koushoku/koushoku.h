@@ -18,6 +18,7 @@ struct Koushoku : public Extension, public Prefs
     int page, const std::string &query, const std::vector<Filter::Pair> &filters) const;
   std::shared_ptr<Manga_t> parseSearchEntry(Element &element) const override;
 
+  std::shared_ptr<Http::Response> mangaRequest(const std::string &path) const override;
   std::shared_ptr<Manga_t> parseManga(HTML &html) const override;
 
   std::shared_ptr<Http::Response> chaptersRequest(const Manga_t &manga) const override;

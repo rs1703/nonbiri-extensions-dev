@@ -5,7 +5,7 @@ set(name Koushoku)
 set(language en)
 set(version 0.1.0)
 set(baseUrl https://koushoku.org)
-set(isNsfw)
+set(isNsfw 1)
 
 add_library(${id} SHARED ${DEPENDENCIES}
   ${CMAKE_CURRENT_LIST_DIR}/koushoku.cpp

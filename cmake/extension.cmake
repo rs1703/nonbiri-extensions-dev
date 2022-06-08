@@ -31,11 +31,11 @@ else()
 endif()
 
 if(DEFINED isNsfw)
-  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} IS_NSFW="${isNsfw}")
+  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} IS_NSFW=1)
 endif()
 
 if(DEFINED useApi)
-  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} USE_API="${useApi}")
+  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} USE_API=1)
 endif()
 
 target_compile_definitions(${id} PRIVATE ${EXT_DEFINITIONS})

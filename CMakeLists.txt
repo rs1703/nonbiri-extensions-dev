@@ -19,7 +19,9 @@ set(DEPENDENCIES
   ${GUMBO_QUERY_SOURCES}
   ${CORE_SOURCES})
 
+file(GLOB EXTENSIONS extensions/*)
 include_directories(
+  ${EXTENSIONS}
   libs/nonbiri-core-dev/libs
   libs/nonbiri-core-dev)
 
@@ -69,8 +71,10 @@ endif()
 
 # Extensions =======================================
 
-file(GLOB extensions extensions/*/*)
-foreach(extension ${extensions})
+file(GLOB EXT_DIRS extensions/*/*)
+foreach(EXT_DIR ${EXT_DIRS})
+  set(CURRENT_EXT_DIR ${EXT_DIR})
+
   unset(id CACHE)
   unset(name CACHE)
   unset(baseUrl CACHE)
@@ -79,6 +83,6 @@ foreach(extension ${extensions})
   unset(isNsfw CACHE)
   unset(useApi CACHE)
   
-  include(${extension}/CMakeLists.txt)
+  include(${CURRENT_EXT_DIR}/CMakeLists.txt)
   include(${CMAKE_CURRENT_LIST_DIR}/cmake/extension.cmake)
 endforeach()

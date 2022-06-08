@@ -38,9 +38,8 @@ if(DEFINED useApi)
   set(EXT_DEFINITIONS ${EXT_DEFINITIONS} USE_API=1)
 endif()
 
-file(GLOB EXT_SOURCES *.cpp)
+file(GLOB EXT_SOURCES ${CURRENT_EXT_DIR}/*.cpp)
 add_library(${id} SHARED ${DEPENDENCIES} ${EXT_SOURCES})
-target_include_directories(${id} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(${id} PRIVATE ${LIBRARIES})
 
 target_compile_definitions(${id} PRIVATE ${EXT_DEFINITIONS})

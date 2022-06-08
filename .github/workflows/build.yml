@@ -55,6 +55,12 @@ jobs:
           path: build/linux/*.so
           retention-days: 1
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: icons
+          path: build/linux/icons/*.png
+          retention-days: 1
+
   build-windows:
     if: "github.repository == 'rs1703/nonbiri-extensions-dev'"
     name: Windows
@@ -91,21 +97,15 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           path: ~/tmp
-
-      - run: |
-          ls ~/tmp
-
-      - run: |
-          ls ~/tmp/*
-
       - uses: actions/checkout@v2
         with:
           ref: releases
 
       - run: |
-          rm -rf linux windows
+          rm -rf linux windows icons
           cp -r ~/tmp/linux $PWD
           cp -r ~/tmp/windows $PWD
+          cp -r ~/tmp/icons $PWD
 
           sudo chmod +x index
           ./index
@@ -113,7 +113,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-          git add windows linux linux.json || true
+          git add linux windows icons linux.json || true
           git commit -m "Update extensions" || true
           git push || true
 

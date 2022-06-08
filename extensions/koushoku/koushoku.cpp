@@ -37,7 +37,7 @@ const Pref orderPref {
 Koushoku::Koushoku() : Extension {}, Prefs {*this, {sortPref, orderPref}}
 {
   client.setRateLimiter(new Http::RateLimiter(5));
-  filters.add(Select {
+  filters.add(new Select {
     "sort",  // key
     "Sort",  // title
     {
@@ -49,7 +49,7 @@ Koushoku::Koushoku() : Extension {}, Prefs {*this, {sortPref, orderPref}}
       {"Pages", "pages"},
     },
   });
-  filters.add(Select {
+  filters.add(new Select {
     "order",  // key
     "Order",  // title
     {

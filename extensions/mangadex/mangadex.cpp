@@ -12,44 +12,44 @@ MangaDex::MangaDex() : Extension {}, Prefs {*this, {Language::pref, ContentRatin
   client.setRateLimiter(new Http::RateLimiter(5));
   client.setDefaultHeader("Referer", baseUrl + "/");
 
-  filters.add(ExcludableCheckbox {
+  filters.add(new ExcludableCheckbox {
     Language::key,  // key
     Language::excludedKey,  // excludedKey
     Language::title,  // title
     Language::options,  // options
   });
 
-  filters.add(Checkbox {
+  filters.add(new Checkbox {
     ContentRating::key,  // key
     ContentRating::title,  // title
     ContentRating::options,  // options
   });
 
-  filters.add(Checkbox {
+  filters.add(new Checkbox {
     Demographic::key,  // key
     Demographic::title,  // title
     Demographic::options,  // options
   });
 
-  filters.add(Checkbox {
+  filters.add(new Checkbox {
     Status::key,  // key
     Status::title,  // title
     Status::options,  // options
   });
 
-  filters.add(Select {
+  filters.add(new Select {
     Sort::key,  // key
     Sort::title,  // title
     Sort::options,  // options
   });
 
-  filters.add(Select {
+  filters.add(new Select {
     Order::key,  // key
     Order::title,  // title
     Order::options,  // options
   });
 
-  filters.add(ExcludableCheckbox {
+  filters.add(new ExcludableCheckbox {
     Tag::key,  // key
     Tag::excludedKey,  // excludedKey
     Tag::title,  // title

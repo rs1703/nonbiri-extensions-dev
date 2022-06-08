@@ -45,6 +45,7 @@ target_link_libraries(${id} PRIVATE ${LIBRARIES})
 target_compile_definitions(${id} PRIVATE ${EXT_DEFINITIONS})
 target_compile_features(${id} PRIVATE cxx_std_20)
 
+set_target_properties(${id} PROPERTIES PREFIX "")
 set_target_properties(${id} PROPERTIES OUTPUT_NAME ${language}.${id}-v${baseVer}.${version})
 add_custom_command(TARGET ${id} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy

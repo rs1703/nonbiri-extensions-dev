@@ -55,7 +55,7 @@ Manga::Manga(Json::Value &json, bool full)
     if (type == Constants::coverArt) {
       const auto fileName = attrs["fileName"].asString();
       if (!fileName.empty())
-        coverUrl = Constants::cdnBaseUrl + "/covers/" + id + "/" + fileName;
+        coverUrl = Constants::cdnBaseUrl + "/covers/" + id + "/" + fileName + ".512.jpg";
       if (!full)
         break;
     } else if (type == Constants::author) {

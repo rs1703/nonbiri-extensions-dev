@@ -19,7 +19,7 @@ jobs:
 
   build-linux:
     if: "github.repository == 'rs1703/nonbiri-extensions-dev'"
-    name: Build
+    name: Linux
     runs-on: ubuntu-latest
     needs: check
 
@@ -57,7 +57,7 @@ jobs:
 
   build-windows:
     if: "github.repository == 'rs1703/nonbiri-extensions-dev'"
-    name: Build
+    name: Windows
     runs-on: windows-2019
     needs: check
 
@@ -73,7 +73,7 @@ jobs:
           restore-keys: cache
 
       - uses: lukka/get-cmake@latest
-      - run: build.bat
+      - run: ./build.bat
 
       - uses: actions/upload-artifact@v3
         with:
@@ -119,7 +119,7 @@ jobs:
 
   index:
     if: "github.repository == 'rs1703/nonbiri-extensions-dev'"
-    name: Index
+    name: Index (Windows)
     runs-on: windows-2019
     needs: publish
 
@@ -129,7 +129,7 @@ jobs:
           ref: releases
 
       - run: |
-          index.exe
+          .\index.exe
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add windows.json

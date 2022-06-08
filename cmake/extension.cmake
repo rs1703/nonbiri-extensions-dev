@@ -1,5 +1,3 @@
-unset(EXT_DEFINITIONS CACHE)
-
 if(DEFINED id)
   set(EXT_DEFINITIONS ${EXT_DEFINITIONS} ID="${id}")
 else()

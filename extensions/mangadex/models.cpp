@@ -44,10 +44,6 @@ Manga::Manga(Json::Value &json, bool full)
   else
     throw std::runtime_error("'title' is empty");
 
-  auto &descriptionMap = attributes["description"];
-  if (!descriptionMap.empty() && descriptionMap.isMember("en"))
-    description = descriptionMap["en"].asString();
-
   for (auto &rel : rels) {
     const std::string type = rel["type"].asString();
     auto &attrs            = rel["attributes"];
@@ -74,6 +70,10 @@ Manga::Manga(Json::Value &json, bool full)
 
   if (!full)
     return;
+
+  auto &descriptionMap = attributes["description"];
+  if (!descriptionMap.empty() && descriptionMap.isMember("en"))
+    description = descriptionMap["en"].asString();
 
   auto &tags = attributes["tags"];
   if (tags.isArray()) {

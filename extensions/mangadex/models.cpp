@@ -170,6 +170,7 @@ template class Result<Chapter>;
 template class Results<Chapter>;
 template class Results<Chapter, Chapter_t>;
 
+template<>
 Result<Manga>::Result(Json::Value &json) : Manga {json["data"], true}
 {
   if (json.isMember("result"))

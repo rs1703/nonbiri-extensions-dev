@@ -8,6 +8,7 @@ HunterGate(
 
 project(nonbiri-dev LANGUAGES C CXX)
 include(FindPkgConfig)
+set(baseVer 1.0)
 
 # Deps =======================================
 
@@ -19,8 +20,6 @@ set(DEPENDENCIES
   ${CORE_SOURCES})
 
 include_directories(
-  ${CMAKE_CURRENT_LIST_DIR}/extensions
-  ${CMAKE_CURRENT_LIST_DIR}
   libs/nonbiri-core-dev/libs
   libs/nonbiri-core-dev)
 
@@ -70,7 +69,7 @@ endif()
 
 # Extensions =======================================
 
-file(GLOB extensions extensions/*)
+file(GLOB extensions extensions/*/*)
 foreach(extension ${extensions})
   unset(id CACHE)
   unset(name CACHE)

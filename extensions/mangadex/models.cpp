@@ -86,6 +86,7 @@ Manga::Manga(Json::Value &json, bool full)
       }
     }
   }
+  std::sort(genres.begin(), genres.end());
 
   std::string contentRating = attributes["contentRating"].asString();
   if (contentRating == "safe") {

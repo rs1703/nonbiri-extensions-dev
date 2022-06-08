@@ -1,1 +1,1 @@
-{"koushoku":{"baseUrl":"https://koushoku.org","id":"koushoku","isNsfw":true,"language":"en","name":"Koushoku","version":"0.1.0"},"mangadex":{"baseUrl":"https://mangadex.org","id":"mangadex","isNsfw":true,"language":"multilingual","name":"MangaDex","version":"0.1.0"}}
+{"koushoku":{"baseUrl":"https://koushoku.org","id":"koushoku","isNsfw":true,"language":"en","name":"Koushoku","version":"1.0.1"},"mangadex":{"baseUrl":"https://mangadex.org","id":"mangadex","isNsfw":true,"language":"all","name":"MangaDex","version":"1.0.1"}}

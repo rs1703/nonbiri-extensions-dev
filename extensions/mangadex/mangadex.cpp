@@ -141,8 +141,20 @@ std::shared_ptr<Http::Response> MangaDex::searchMangaRequest(
   if (!query.empty())
     searchParams.add("title", query);
 
-  // todo: apply filters to searchParams
-  return client.get(Constants::apiMangaUrl + "/?" + searchParams.toString());
+  std::string sort {"latestUploadedChapter"};
+  std::string order {"desc"};
+
+  for (const auto &filter : filters) {
+    if (filter.key == Sort::key)
+      sort = filter.value;
+    else if (filter.key == Order::key)
+      order = filter.value;
+    else
+      searchParams.add(filter.key, filter.value);
+  }
+  searchParams.add("order[" + sort + "]", order);
+
+  return client.get(Constants::apiMangaUrl + "?" + searchParams.toString());
 }
 
 std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseSearchEntries(

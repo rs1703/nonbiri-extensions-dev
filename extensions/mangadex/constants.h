@@ -111,8 +111,9 @@ const std::string key {"sort"};
 
 const std::vector<Filter::Option> options {
   {"Title", "title"},
-  {"Updated date", "updated_at"},
-  {"Chapter uploaded date", "uploaded_at", true},
+  {"Updated Date", "updatedAt"},
+  {"Created Date", "createdAt"},
+  {"Latest Uploaded Chapter Date", "latestUploadedChapter", true},
   {"Number of follows", "followedCount"},
   {"Relevance", "relevance"},
   {"Year", "year"},

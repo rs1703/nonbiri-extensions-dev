@@ -12,6 +12,7 @@ MangaDex::MangaDex() : Extension {}, Prefs {*this, {Language::pref, ContentRatin
   client.setRateLimiter(new Http::RateLimiter(5));
   client.setDefaultHeader("Referer", baseUrl + "/");
 
+  filters.add(new Hidden {Language::excludedKey});
   filters.add(new ExcludableCheckbox {
     Language::key,  // key
     Language::excludedKey,  // excludedKey
@@ -49,6 +50,7 @@ MangaDex::MangaDex() : Extension {}, Prefs {*this, {Language::pref, ContentRatin
     Order::options,  // options
   });
 
+  filters.add(new Hidden {Tag::excludedKey});
   filters.add(new ExcludableCheckbox {
     Tag::key,  // key
     Tag::excludedKey,  // excludedKey

@@ -35,13 +35,21 @@ Manga::Manga(Json::Value &json, bool full)
   if (titleMap.empty())
     throw std::runtime_error("'title' not found");
 
-  if (titleMap.isMember("en"))
+  if (titleMap.isMember("en")) {
     title = titleMap["en"].asString();
-  else if (titleMap.isMember("ja-ro"))
+  } else if (titleMap.isMember("ja-ro")) {
     title = titleMap["ja-ro"].asString();
-  else if (titleMap.isMember("ja"))
+  } else if (titleMap.isMember("ja")) {
     title = titleMap["ja"].asString();
-  else
+  } else {
+    for (auto &v : titleMap) {
+      if (!title.empty())
+        break;
+      title = v.asString();
+    }
+  }
+
+  if (title.empty())
     throw std::runtime_error("'title' is empty");
 
   for (auto &rel : rels) {

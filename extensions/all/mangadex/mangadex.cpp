@@ -108,8 +108,7 @@ std::shared_ptr<Http::Response> MangaDex::latestsRequest(int page) const
   return client.get(Constants::apiChapterUrl + "?" + searchParams.toString());
 }
 
-std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseLatestEntries(
-  const Http::Response &response) const
+std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseLatestEntries(const Http::Response &response) const
 {
   std::vector<std::string> mangaIds;
   bool hasNext {};
@@ -175,8 +174,7 @@ std::shared_ptr<Http::Response> MangaDex::searchMangaRequest(
   return client.get(Constants::apiMangaUrl + "?" + searchParams.toString());
 }
 
-std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseSearchEntries(
-  const Http::Response &response) const
+std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseSearchEntries(const Http::Response &response) const
 {
   if (response.statusCode != 200)
     throw std::runtime_error("Failed to get search results: HTTP " + std::to_string(response.statusCode));
@@ -232,8 +230,7 @@ std::shared_ptr<Http::Response> MangaDex::chaptersRequest(const Manga_t &manga) 
   return chaptersRequest(manga, 0);
 }
 
-std::vector<std::shared_ptr<Chapter_t>> MangaDex::parseChapterEntries(
-  const Manga_t &manga, const Http::Response &response) const
+std::vector<std::shared_ptr<Chapter_t>> MangaDex::parseChapterEntries(const Manga_t &manga, const Http::Response &response) const
 {
   Json::Value root;
   Json::Reader reader;
@@ -291,16 +288,14 @@ void applyGeneric(SearchParams &searchParams,
     return;
 
   for (const auto &value : pref->value) {
-    const auto it = ContentRating::index.find(value.asString());
-    if (it != ContentRating::index.end())
-      searchParams.add(pref->key, ContentRating::options[it->second].value);
+    const auto it = index.find(value.asString());
+    if (it != index.end())
+      searchParams.add(pref->key, options[it->second].value);
   }
 }
 
-void applyExcludable(SearchParams &searchParams,
-  Pref::Pref *pref,
-  const std::vector<Filter::Option> &options,
-  const std::map<std::string, size_t> &index)
+void applyExcludable(
+  SearchParams &searchParams, Pref::Pref *pref, const std::vector<Filter::Option> &options, const std::map<std::string, size_t> &index)
 {
   if (pref == nullptr)
     return;

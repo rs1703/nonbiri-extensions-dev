@@ -27,17 +27,8 @@ include_directories(
 
 # Packages ===================================
 
-if(UNIX)
-  set(THREADS_PREFER_PTHREAD_FLAG ON)
-  find_package(Threads REQUIRED)
-
-  set(LIBRARIES ${LIBRARIES} Threads::Threads -ldl)
-endif()
-
 pkg_check_modules(CURL libcurl)
-if(CURL_FOUND)
-  include_directories(${CURL_INCLUDE_DIR})
-else()
+if(NOT CURL_FOUND)
   unset(CURL_FOUND CACHE)
   hunter_add_package(CURL)
   find_package(CURL CONFIG REQUIRED)

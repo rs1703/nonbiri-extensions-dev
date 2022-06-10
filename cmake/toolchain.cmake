@@ -37,7 +37,4 @@ else()
 		-fdiagnostics-color=always \
 		-Wunreachable-code \
 		-Wno-attributes")
-	if(NOT CMAKE_COMPILER_IS_GNUCXX)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
-	endif()
 endif()

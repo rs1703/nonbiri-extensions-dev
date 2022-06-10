@@ -6,7 +6,7 @@ const char *thumbnailSelector = ".thumbnail img";
 
 RegisterExtension(Koushoku);
 
-Koushoku::Koushoku() : Extension {}
+Koushoku::Koushoku() : ParsedExtension {}
 {
   client.setRateLimiter(new Http::RateLimiter(5));
 
@@ -150,4 +150,24 @@ std::vector<std::string> Koushoku::parsePages(HTML &html) const
   for (int i = 1; i <= total; i++)
     pages.push_back(origin + "/data/" + id + "/" + std::to_string(i) + ".jpg");
   return pages;
+}
+
+std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> Koushoku::parseLatestEntries(HTML &html) const
+{
+  return Extension::parseLatestEntries(html);
+}
+
+std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> Koushoku::parseSearchEntries(HTML &html) const
+{
+  return Extension::parseSearchEntries(html);
+}
+
+std::string Koushoku::chaptersSelector() const
+{
+  return Extension::chaptersSelector();
+}
+
+std::shared_ptr<Chapter_t> Koushoku::parseChapterEntry(const Manga_t &manga, Element &element) const
+{
+  return Extension::parseChapterEntry(manga, element);
 }

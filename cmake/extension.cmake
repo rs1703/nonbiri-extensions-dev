@@ -32,10 +32,6 @@ if(DEFINED isNsfw)
   set(EXT_DEFINITIONS ${EXT_DEFINITIONS} IS_NSFW=1)
 endif()
 
-if(DEFINED useApi)
-  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} USE_API=1)
-endif()
-
 file(GLOB EXT_SOURCES ${CURRENT_EXT_DIR}/*.cpp)
 add_library(${id} SHARED ${DEPENDENCIES} ${EXT_SOURCES})
 target_link_libraries(${id} PRIVATE ${LIBRARIES})

@@ -3,7 +3,7 @@
 
 #include <core/extension.h>
 
-struct Koushoku : public Extension
+struct Koushoku : public ParsedExtension
 {
   Koushoku();
 
@@ -26,6 +26,12 @@ struct Koushoku : public Extension
 
   std::shared_ptr<Http::Response> pagesRequest(const std::string &path) const override;
   std::vector<std::string> parsePages(HTML &html) const override;
+
+  // Not Implemented
+  std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> parseLatestEntries(HTML &html) const override;
+  std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> parseSearchEntries(HTML &html) const override;
+  std::string chaptersSelector() const override;
+  std::shared_ptr<Chapter_t> parseChapterEntry(const Manga_t &manga, Element &element) const override;
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

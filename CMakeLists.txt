@@ -73,7 +73,6 @@ foreach(CURRENT_EXT_DIR ${EXT_DIRS})
   unset(language)
   unset(version)
   unset(isNsfw)
-  unset(useApi)
   
   include(${CURRENT_EXT_DIR}/CMakeLists.txt)
   include(${CMAKE_CURRENT_LIST_DIR}/cmake/extension.cmake)

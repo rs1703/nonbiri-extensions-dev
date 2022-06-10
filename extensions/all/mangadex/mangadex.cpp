@@ -6,56 +6,90 @@
 #include <mangadex/models.h>
 
 RegisterExtension(MangaDex);
+WithPrefs(MangaDex);
 
-MangaDex::MangaDex() : Extension {}, Prefs {*this, {Language::pref, ContentRating::pref}}
+MangaDex::MangaDex() : Extension(), Pref::Prefs {id}
 {
   client.setRateLimiter(new Http::RateLimiter(5));
   client.setDefaultHeader("Referer", baseUrl + "/");
 
-  filters.add(new Hidden {Language::excludedKey});
-  filters.add(new ExcludableCheckbox {
-    Language::key,  // key
-    Language::excludedKey,  // excludedKey
-    Language::title,  // title
-    Language::options,  // options
+  Prefs::add(new Pref::ExcludableCheckbox {
+    Language::excludedKey,
+    {
+      .key     = Language::key,
+      .title   = Language::title,
+      .options = optionsToPairs(Language::options),
+    },
   });
 
-  filters.add(new Checkbox {
-    ContentRating::key,  // key
-    ContentRating::title,  // title
-    ContentRating::options,  // options
+  Prefs::add(new Pref::Checkbox {{
+    .key     = ContentRating::key,
+    .title   = ContentRating::title,
+    .value   = stringsToJson({
+        ContentRating::options[0].key,
+        ContentRating::options[1].key,
+        ContentRating::options[2].key,
+    }),
+    .options = optionsToPairs(ContentRating::options),
+  }});
+
+  Prefs::add(new Pref::ExcludableCheckbox {
+    Tag::excludedKey,
+    {
+      .key     = Tag::key,
+      .title   = Tag::title,
+      .options = optionsToPairs(Tag::options),
+    },
   });
 
-  filters.add(new Checkbox {
-    Demographic::key,  // key
-    Demographic::title,  // title
-    Demographic::options,  // options
+  filters.add(new Filter::Hidden {Language::excludedKey});
+  filters.add(new Filter::ExcludableCheckbox {
+    Language::excludedKey,
+    {
+      .key     = Language::key,
+      .title   = Language::title,
+      .options = Language::options,
+    },
   });
 
-  filters.add(new Checkbox {
-    Status::key,  // key
-    Status::title,  // title
-    Status::options,  // options
-  });
+  filters.add(new Filter::Checkbox {{
+    .key     = ContentRating::key,
+    .title   = ContentRating::title,
+    .options = ContentRating::options,
+  }});
 
-  filters.add(new Select {
-    Sort::key,  // key
-    Sort::title,  // title
-    Sort::options,  // options
-  });
+  filters.add(new Filter::Checkbox {{
+    .key     = Demographic::key,
+    .title   = Demographic::title,
+    .options = Demographic::options,
+  }});
 
-  filters.add(new Select {
-    Order::key,  // key
-    Order::title,  // title
-    Order::options,  // options
-  });
+  filters.add(new Filter::Checkbox {{
+    .key     = Status::key,
+    .title   = Status::title,
+    .options = Status::options,
+  }});
 
-  filters.add(new Hidden {Tag::excludedKey});
-  filters.add(new ExcludableCheckbox {
-    Tag::key,  // key
-    Tag::excludedKey,  // excludedKey
-    Tag::title,  // title
-    Tag::options,  // options
+  filters.add(new Filter::Select {{
+    .key     = Sort::key,
+    .title   = Sort::title,
+    .options = Sort::options,
+  }});
+
+  filters.add(new Filter::Select {{
+    .key     = Order::key,
+    .title   = Order::title,
+    .options = Order::options,
+  }});
+
+  filters.add(new Filter::Hidden {Tag::excludedKey});
+  filters.add(new Filter::ExcludableCheckbox {
+    Tag::excludedKey,
+    {
+      .key     = Tag::key,
+      .title   = Tag::title,
+      .options = Tag::options,
+    },
   });
 }
 
@@ -67,18 +101,10 @@ std::shared_ptr<Http::Response> MangaDex::latestsRequest(int page) const
     {"order[publishAt]", "desc"},
     {"includeFutureUpdates", "0"},
   }};
-  {
-    const Pref *pref = getPref(Language::prefKey);
-    if (pref != nullptr)
-      for (const auto &value : pref->values)
-        searchParams.add(Language::key, value.asString());
-  }
-  {
-    const Pref *pref = getPref(ContentRating::prefKey);
-    if (pref != nullptr)
-      for (const auto &value : pref->values)
-        searchParams.add(ContentRating::key, value.asString());
-  }
+
+  applyLanguagePref(searchParams);
+  applyContentRatingPref(searchParams);
+
   return client.get(Constants::apiChapterUrl + "?" + searchParams.toString());
 }
 
@@ -103,18 +129,8 @@ std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseLatestEnt
     {"includes[]", Constants::coverArt},
     {"limit", std::to_string(mangaIds.size())},
   }};
-  {
-    const Pref *pref = getPref(Language::prefKey);
-    if (pref != nullptr)
-      for (const auto &value : pref->values)
-        searchParams.add(Language::key, value.asString());
-  }
-  {
-    const Pref *pref = getPref(ContentRating::prefKey);
-    if (pref != nullptr)
-      for (const auto &value : pref->values)
-        searchParams.add(ContentRating::key, value.asString());
-  }
+  applyPrefs(searchParams);
+
   for (const auto &id : mangaIds)
     searchParams.add("ids[]", id);
 
@@ -132,7 +148,7 @@ std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseLatestEnt
 }
 
 std::shared_ptr<Http::Response> MangaDex::searchMangaRequest(
-  int page, const std::string &query, const std::vector<Filter::Pair> &filters) const
+  int page, const std::string &query, const std::vector<std::pair<std::string, std::string>> &filters) const
 {
   SearchParams searchParams {{
     {"offset", std::to_string(Constants::mangaLimit * (page - 1))},
@@ -146,16 +162,16 @@ std::shared_ptr<Http::Response> MangaDex::searchMangaRequest(
   std::string sort {"latestUploadedChapter"};
   std::string order {"desc"};
 
-  for (const auto &filter : filters) {
-    if (filter.key == Sort::key)
-      sort = filter.value;
-    else if (filter.key == Order::key)
-      order = filter.value;
+  for (const auto &[key, value] : filters) {
+    if (key == Sort::key)
+      sort = value;
+    else if (key == Order::key)
+      order = value;
     else
-      searchParams.add(filter.key, filter.value);
+      searchParams.add(key, value);
   }
-  searchParams.add("order[" + sort + "]", order);
 
+  searchParams.add("order[" + sort + "]", order);
   return client.get(Constants::apiMangaUrl + "?" + searchParams.toString());
 }
 
@@ -266,7 +282,71 @@ std::vector<std::string> MangaDex::parsePages(const Http::Response &respose) con
   return pages;
 }
 
-Prefs *MangaDex::getPrefs() const
+void applyGeneric(SearchParams &searchParams,
+  const std::shared_ptr<Pref::Pref> &pref,
+  const std::vector<Filter::Option> &options,
+  const std::map<std::string, size_t> &index)
 {
-  return Prefs::getInstance();
+  if (pref == nullptr)
+    return;
+
+  for (const auto &value : pref->value) {
+    const auto it = ContentRating::index.find(value.asString());
+    if (it != ContentRating::index.end())
+      searchParams.add(pref->key, ContentRating::options[it->second].value);
+  }
+}
+
+void applyExcludable(SearchParams &searchParams,
+  Pref::Pref *pref,
+  const std::vector<Filter::Option> &options,
+  const std::map<std::string, size_t> &index)
+{
+  if (pref == nullptr)
+    return;
+
+  auto ppref = dynamic_cast<const Pref::ExcludableCheckbox *>(pref);
+  for (const auto &json : pref->value) {
+    std::string key {};
+    std::string valueKey {};
+    if (json.isArray()) {
+      key      = ppref->excludedKey;
+      valueKey = json[0].asString();
+    } else {
+      key      = pref->key;
+      valueKey = json.asString();
+    }
+
+    const auto it = index.find(valueKey);
+    if (it != index.end())
+      searchParams.add(key, options[it->second].value);
+  }
+}
+
+void MangaDex::applyLanguagePref(SearchParams &searchParams) const
+{
+  const auto pref = Prefs::get(Language::key);
+  if (pref != nullptr && !pref->value.empty())
+    applyExcludable(searchParams, pref.get(), Language::options, Language::index);
+}
+
+void MangaDex::applyContentRatingPref(SearchParams &searchParams) const
+{
+  const auto pref = Prefs::get(ContentRating::key);
+  if (pref != nullptr && !pref->value.empty())
+    applyExcludable(searchParams, pref.get(), ContentRating::options, ContentRating::index);
+}
+
+void MangaDex::applyTagPref(SearchParams &searchParams) const
+{
+  const auto pref = Prefs::get(Tag::key);
+  if (pref != nullptr && !pref->value.empty())
+    applyExcludable(searchParams, pref.get(), Tag::options, Tag::index);
+}
+
+void MangaDex::applyPrefs(SearchParams &searchParams) const
+{
+  applyLanguagePref(searchParams);
+  applyContentRatingPref(searchParams);
+  applyTagPref(searchParams);
 }

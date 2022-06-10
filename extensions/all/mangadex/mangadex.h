@@ -4,7 +4,7 @@
 #include <core/extension.h>
 #include <json/json.h>
 
-struct MangaDex : public Extension, public Prefs
+struct MangaDex : public Extension, Pref::Prefs
 {
   MangaDex();
 
@@ -13,7 +13,7 @@ struct MangaDex : public Extension, public Prefs
     const Http::Response &response) const override;
 
   std::shared_ptr<Http::Response> searchMangaRequest(
-    int page, const std::string &query, const std::vector<Filter::Pair> &filters) const override;
+    int page, const std::string &query, const std::vector<std::pair<std::string, std::string>> &filters) const override;
   std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> parseSearchEntries(
     const Http::Response &response) const override;
 
@@ -28,7 +28,13 @@ struct MangaDex : public Extension, public Prefs
   std::shared_ptr<Http::Response> pagesRequest(const std::string &path) const override;
   std::vector<std::string> parsePages(const Http::Response &response) const override;
 
-  Prefs *getPrefs() const override;
+  Prefs *prefs() const override;
+
+private:
+  void applyLanguagePref(SearchParams &searchParams) const;
+  void applyContentRatingPref(SearchParams &searchParams) const;
+  void applyTagPref(SearchParams &searchParams) const;
+  void applyPrefs(SearchParams &searchParams) const;
 };
 
 #endif  // MANGADEX_MANGADEX_H_

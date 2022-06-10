@@ -1,4 +1,6 @@
-#include <istream>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 #include <core/utility.h>
@@ -88,8 +90,8 @@ Manga::Manga(Json::Value &json, bool full)
     for (auto &tag : tags) {
       const std::string id = tag["id"].asString();
       if (!id.empty()) {
-        const auto &it = Tag::list.find(id);
-        if (it != Tag::list.end())
+        const auto &it = Tag::map.find(id);
+        if (it != Tag::map.end())
           genres.push_back(it->second);
       }
     }
@@ -108,8 +110,8 @@ Manga::Manga(Json::Value &json, bool full)
   if (!demographic.empty())
     genres.push_back(demographic);
 
-  const auto &it = Language::list.find(attributes["originalLanguage"].asString());
-  if (it != Language::list.end())
+  const auto &it = Language::map.find(attributes["originalLanguage"].asString());
+  if (it != Language::map.end())
     genres.push_back(it->second);
 
   const std::string publicationStatus = attributes["status"].asString();

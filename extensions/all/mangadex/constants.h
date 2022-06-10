@@ -1,11 +1,11 @@
 #ifndef MANGADEX_CONSTANTS_H_
 #define MANGADEX_CONSTANTS_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include <core/filters.h>
-#include <core/prefs.h>
+#include <core/filter.h>
 #include <json/json.h>
 #include <mangadex/utility.h>
 
@@ -15,7 +15,6 @@ const std::string cdnBaseUrl {"https://uploads.mangadex.org"};
 const std::string apiBaseUrl {"https://api.mangadex.org"};
 const std::string apiMangaUrl {apiBaseUrl + "/manga"};
 const std::string apiChapterUrl {apiBaseUrl + "/chapter"};
-const std::string apiListUrl {apiBaseUrl + "/list"};
 const std::string atHomePostUrl {"https://api.mangadex.network/report"};
 
 constexpr const uint16_t mangaLimit {20};
@@ -27,7 +26,7 @@ constexpr const char *scanlationGroup {"scanlation_group"};
 constexpr const char *uploader {"uploader"};
 constexpr const char *author {"author"};
 constexpr const char *artist {"artist"};
-};  // namespace Constants
+}  // namespace Constants
 
 namespace Language
 {
@@ -41,21 +40,15 @@ const std::vector<Filter::Option> options {
   {"Korean (Manhwa)", "ko"},
 };
 
-const std::map<std::string, std::string> list {
+const auto index = createOptionsIndex(options);
+const std::map<std::string, std::string> map {
   {"en", "English"},
   {"ja", "Japanese"},
   {"jp", "Japanese"},
   {"zh", "Chinese"},
   {"ko", "Korean"},
 };
-
-const std::string prefKey {"originalLanguage"};
-const Pref pref {
-  .key     = prefKey,
-  .title   = title,
-  .options = transform(options),
-};
-};  // namespace Language
+}  // namespace Language
 
 namespace ContentRating
 {
@@ -69,13 +62,8 @@ const std::vector<Filter::Option> options {
   {"Pornographic", "pornographic"},
 };
 
-const std::string prefKey {"contentRating"};
-const Pref pref {
-  .key     = prefKey,
-  .title   = title,
-  .options = transform(options),
-};
-};  // namespace ContentRating
+const auto index = createOptionsIndex(options);
+}  // namespace ContentRating
 
 namespace Demographic
 {
@@ -89,7 +77,7 @@ const std::vector<Filter::Option> options {
   {"Seinen", "seinen"},
   {"Josei", "josei"},
 };
-};  // namespace Demographic
+}  // namespace Demographic
 
 namespace Status
 {
@@ -102,7 +90,7 @@ const std::vector<Filter::Option> options {
   {"Hiatus", "hiatus"},
   {"Cancelled", "cancelled"},
 };
-};  // namespace Status
+}  // namespace Status
 
 namespace Sort
 {
@@ -118,7 +106,7 @@ const std::vector<Filter::Option> options {
   {"Relevance", "relevance"},
   {"Year", "year"},
 };
-};  // namespace Sort
+}  // namespace Sort
 
 namespace Order
 {
@@ -129,7 +117,7 @@ const std::vector<Filter::Option> options {
   {"Ascending", "asc"},
   {"Descending", "desc", true},
 };
-};  // namespace Order
+}  // namespace Order
 
 namespace Tag
 {
@@ -216,7 +204,8 @@ const std::vector<Filter::Option> options {
   {"Gyaru", "fad12b5e-68ba-460e-b933-9ae8318f5b65"},
 };
 
-const auto list = flip(options);
-};  // namespace Tag
+const auto index = createOptionsIndex(options);
+const auto map   = optionsToMap(options);
+}  // namespace Tag
 
 #endif  // MANGADEX_CONSTANTS_H_

@@ -6,58 +6,32 @@ const char *thumbnailSelector = ".thumbnail img";
 
 RegisterExtension(Koushoku);
 
-const Pref sortPref {
-  .key         = "sort",
-  .title       = "Sort",
-  .description = "Default sorting behavior",
-  .value       = "id",
-  .options =
-    {
-      {"ID", "id"},
-      {"Title", "title"},
-      {"Created Date", "created_at"},
-      {"Uploaded Date", "published_at"},
-      {"Pages", "pages"},
-      {"Title", "title"},
-    },
-};
-
-const Pref orderPref {
-  .key         = "order",
-  .title       = "Order",
-  .description = "Default order behavior",
-  .value       = "desc",
-  .options =
-    {
-      {"Ascending", "asc"},
-      {"Descending", "desc"},
-    },
-};
-
-Koushoku::Koushoku() : Extension {}, Prefs {*this, {sortPref, orderPref}}
+Koushoku::Koushoku() : Extension {}
 {
   client.setRateLimiter(new Http::RateLimiter(5));
-  filters.add(new Select {
-    "sort",  // key
-    "Sort",  // title
-    {
-      // options
-      {"ID", "id"},
-      {"Title", "title"},
-      {"Created Date", "created_at", true},
-      {"Uploaded Date", "published_at"},
-      {"Pages", "pages"},
-    },
-  });
-  filters.add(new Select {
-    "order",  // key
-    "Order",  // title
-    {
-      //  options
-      {"Ascending", "asc"},
-      {"Descending", "desc", true},
-    },
-  });
+
+  filters.add(new Filter::Select {{
+    .key   = "sort",
+    .title = "Sort",
+    .options =
+      {
+        {"ID", "id"},
+        {"Title", "title"},
+        {"Created Date", "created_at", true},
+        {"Uploaded Date", "published_at"},
+        {"Pages", "pages"},
+      },
+  }});
+
+  filters.add(new Filter::Select {{
+    .key   = "order",
+    .title = "Order",
+    .options =
+      {
+        {"Ascending", "asc"},
+        {"Descending", "desc", true},
+      },
+  }});
 }
 
 std::string Koushoku::latestsSelector() const
@@ -95,12 +69,19 @@ std::string Koushoku::searchMangaNextSelector() const
 }
 
 std::shared_ptr<Http::Response> Koushoku::searchMangaRequest(
-  int page, const std::string &query, const std::vector<Filter::Pair> &filters) const
+  int page, const std::string &query, const std::vector<std::pair<std::string, std::string>> &filters) const
 {
-  std::string url = baseUrl + "/search?page=" + std::to_string(page) + "&q=" + query;
-  for (auto &filter : filters)
-    url += "&" + filter.key + "=" + filter.value;
-  return client.get(url);
+  SearchParams searchParams {{
+    {"page", std::to_string(page)},
+  }};
+
+  for (const auto &[key, value] : filters)
+    searchParams.add(key, value);
+
+  if (!query.empty())
+    searchParams.add("q", query);
+
+  return client.get(baseUrl + "/search?" + searchParams.toString());
 }
 
 std::shared_ptr<Manga_t> Koushoku::parseSearchEntry(Element &element) const
@@ -169,9 +150,4 @@ std::vector<std::string> Koushoku::parsePages(HTML &html) const
   for (int i = 1; i <= total; i++)
     pages.push_back(origin + "/data/" + id + "/" + std::to_string(i) + ".jpg");
   return pages;
-}
-
-Prefs *Koushoku::getPrefs() const
-{
-  return Prefs::getInstance();
 }

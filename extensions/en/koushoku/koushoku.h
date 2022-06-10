@@ -3,7 +3,7 @@
 
 #include <core/extension.h>
 
-struct Koushoku : public Extension, public Prefs
+struct Koushoku : public Extension
 {
   Koushoku();
 
@@ -15,7 +15,7 @@ struct Koushoku : public Extension, public Prefs
   std::string searchMangaSelector() const override;
   std::string searchMangaNextSelector() const override;
   std::shared_ptr<Http::Response> searchMangaRequest(
-    int page, const std::string &query, const std::vector<Filter::Pair> &filters) const;
+    int page, const std::string &query, const std::vector<std::pair<std::string, std::string>> &filters) const;
   std::shared_ptr<Manga_t> parseSearchEntry(Element &element) const override;
 
   std::shared_ptr<Http::Response> mangaRequest(const std::string &path) const override;
@@ -26,8 +26,6 @@ struct Koushoku : public Extension, public Prefs
 
   std::shared_ptr<Http::Response> pagesRequest(const std::string &path) const override;
   std::vector<std::string> parsePages(HTML &html) const override;
-
-  Prefs *getPrefs() const override;
 };
 
 #endif  // KOUSHOKU_KOUSHOKU_H_

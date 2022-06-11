@@ -95,54 +95,25 @@ MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {id}
 std::shared_ptr<Http::Response> MangaDex::latestsRequest(int page) const
 {
   SearchParams searchParams {{
-    {"offset", std::to_string(Constants::latestChaptersLimit * (page - 1))},
-    {"limit", std::to_string(Constants::latestChaptersLimit)},
-    {"order[publishAt]", "desc"},
-    {"includeFutureUpdates", "0"},
+    {"includes[]", Constants::coverArt},
+    {"limit", std::to_string(Constants::mangaLimit)},
+    {"offset", std::to_string(Constants::mangaLimit * (page - 1))},
+    {"order[latestUploadedChapter]", "desc"},
   }};
+  applyPrefs(searchParams);
 
-  applyLanguagePref(searchParams);
-  applyContentRatingPref(searchParams);
-
-  return client.get(Constants::apiChapterUrl + "?" + searchParams.toString());
+  return client.get(Constants::apiMangaUrl + "?" + searchParams.toString());
 }
 
 std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> MangaDex::parseLatestEntries(const Http::Response &response) const
 {
-  std::vector<std::string> mangaIds;
-  bool hasNext {};
-  {
-    Json::Value root;
-    Json::Reader reader;
-    if (!reader.parse(response.body, root))
-      return {};
-
-    Results<Chapter> result {root};
-    hasNext = result.limit + result.offset < result.total;
-    for (const auto &entry : result.entries)
-      mangaIds.push_back(entry->mangaId);
-  }
-
-  SearchParams searchParams {{
-    {"includes[]", Constants::coverArt},
-    {"limit", std::to_string(mangaIds.size())},
-  }};
-  applyPrefs(searchParams);
-
-  for (const auto &id : mangaIds)
-    searchParams.add("ids[]", id);
-
-  const auto mangaResponse = client.get(Constants::apiMangaUrl + "?" + searchParams.toString());
-  if (mangaResponse == nullptr)
-    return {};
-
   Json::Value root;
   Json::Reader reader;
-  if (!reader.parse(mangaResponse->body, root))
+  if (!reader.parse(response.body, root))
     return {};
 
   Results<Manga, Manga_t> result {root};
-  return {result.entries, hasNext};
+  return {result.entries, result.offset + result.limit < result.total};
 }
 
 std::shared_ptr<Http::Response> MangaDex::searchMangaRequest(

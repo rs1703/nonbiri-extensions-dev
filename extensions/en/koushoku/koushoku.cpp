@@ -17,7 +17,7 @@ Koushoku::Koushoku() : ParsedExtension {}
       {
         {"ID", "id"},
         {"Title", "title"},
-        {"Created Date", "created_at", true},
+        {"Created Date", "created_at", Filter::State::Enabled},
         {"Uploaded Date", "published_at"},
         {"Pages", "pages"},
       },
@@ -29,7 +29,7 @@ Koushoku::Koushoku() : ParsedExtension {}
     .options =
       {
         {"Ascending", "asc"},
-        {"Descending", "desc", true},
+        {"Descending", "desc", Filter::State::Enabled},
       },
   }});
 }

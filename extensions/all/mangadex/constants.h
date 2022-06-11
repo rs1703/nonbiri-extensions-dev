@@ -17,7 +17,7 @@ const std::string apiMangaUrl {apiBaseUrl + "/manga"};
 const std::string apiChapterUrl {apiBaseUrl + "/chapter"};
 const std::string atHomePostUrl {"https://api.mangadex.network/report"};
 
-constexpr const uint16_t mangaLimit {20};
+constexpr const uint16_t mangaLimit {25};
 constexpr const uint16_t latestChaptersLimit {100};
 
 constexpr const char *manga {"manga"};

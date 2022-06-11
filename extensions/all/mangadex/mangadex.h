@@ -2,6 +2,7 @@
 #define MANGADEX_MANGADEX_H_
 
 #include <core/extension.h>
+#include <core/pref.h>
 #include <json/json.h>
 
 struct MangaDex : public HttpExtension, Pref::Prefs
@@ -24,8 +25,6 @@ struct MangaDex : public HttpExtension, Pref::Prefs
 
   std::shared_ptr<Http::Response> pagesRequest(const std::string &path) const override;
   std::vector<std::string> parsePages(const Http::Response &response) const override;
-
-  Prefs *prefs() const override;
 
 private:
   void applyLanguagePref(SearchParams &searchParams) const;

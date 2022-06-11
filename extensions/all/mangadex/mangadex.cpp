@@ -6,7 +6,6 @@
 #include <mangadex/models.h>
 
 RegisterExtension(MangaDex);
-WithPrefs(MangaDex);
 
 MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {id}
 {

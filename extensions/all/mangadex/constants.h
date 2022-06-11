@@ -56,9 +56,9 @@ const std::string title {"Content Rating"};
 const std::string key {"contentRating[]"};
 
 const std::vector<Filter::Option> options {
-  {"Safe", "safe", true},
-  {"Suggestive", "suggestive", true},
-  {"Erotica", "erotica", true},
+  {"Safe", "safe", Filter::State::Enabled},
+  {"Suggestive", "suggestive", Filter::State::Enabled},
+  {"Erotica", "erotica", Filter::State::Enabled},
   {"Pornographic", "pornographic"},
 };
 
@@ -101,7 +101,7 @@ const std::vector<Filter::Option> options {
   {"Title", "title"},
   {"Updated Date", "updatedAt"},
   {"Created Date", "createdAt"},
-  {"Latest Uploaded Chapter Date", "latestUploadedChapter", true},
+  {"Latest Uploaded Chapter Date", "latestUploadedChapter", Filter::State::Enabled},
   {"Number of follows", "followedCount"},
   {"Relevance", "relevance"},
   {"Year", "year"},
@@ -115,7 +115,7 @@ const std::string key {"order"};
 
 const std::vector<Filter::Option> options {
   {"Ascending", "asc"},
-  {"Descending", "desc", true},
+  {"Descending", "desc", Filter::State::Enabled},
 };
 }  // namespace Order
 

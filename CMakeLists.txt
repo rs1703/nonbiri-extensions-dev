@@ -45,13 +45,14 @@ else()
   set(LIBRARIES ${LIBRARIES} jsoncpp_lib_static)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
 if(WIN32)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy
     "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/schema.sql"
     "${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.sql")
 else()
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES} -ldl)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy
     "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/schema.sql"

@@ -113,7 +113,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-          git add index index.exe index.sql linux.json || true
+          git add index index.exe index.db index.sql linux.json || true
           git commit -m "Update extensions" || true
           git push || true
 
@@ -132,6 +132,6 @@ jobs:
           .\index.exe
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add windows.json
+          git add index.db windows.json
           git commit -m "Update windows.json" || true
           git push || true

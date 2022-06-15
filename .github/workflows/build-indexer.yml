@@ -34,7 +34,7 @@ jobs:
 
       - run: |
           sudo apt-get update -y
-          sudo apt-get -qq install ccache libsqlite3-dev
+          sudo apt-get -qq install ccache
 
       - uses: actions/cache@v2
         with:
@@ -53,9 +53,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: linux
-          path: |
-            build/linux/index
-            build/linux/index.sql
+          path: build/linux/index
           retention-days: 1
 
   build-windows:
@@ -81,8 +79,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: windows
-          path: |
-            build/windows/Release/index.exe
+          path: build/windows/Release/index.exe
           retention-days: 1
 
   publish:
@@ -113,7 +110,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-          git add index index.exe index.db index.sql linux.json || true
+          git add index index.exe linux.json || true
           git commit -m "Update extensions" || true
           git push || true
 
@@ -132,6 +129,6 @@ jobs:
           .\index.exe
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git add index.db windows.json
+          git add windows.json
           git commit -m "Update windows.json" || true
           git push || true

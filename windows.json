@@ -1,5 +1,6 @@
 {
    "1" : {
+      "domain" : "mangadex.org",
       "isNsfw" : true,
       "language" : "all",
       "name" : "MangaDex",
@@ -7,6 +8,7 @@
       "version" : "1.0.1"
    },
    "2" : {
+      "domain" : "koushoku.org",
       "isNsfw" : true,
       "language" : "en",
       "name" : "Koushoku",

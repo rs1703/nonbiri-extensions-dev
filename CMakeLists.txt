@@ -19,19 +19,6 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 # Packages ===================================
 
-pkg_check_modules(SQLITE3 sqlite3)
-if(SQLITE3_FOUND)
-  include_directories(${SQLITE3_INCLUDE_DIR})
-
-  set(LIBRARIES ${LIBRARIES} ${SQLITE3_LIBRARIES})
-else()
-  unset(SQLITE3_FOUND CACHE)
-  hunter_add_package(sqlite3)
-  find_package(sqlite3 CONFIG REQUIRED)
-
-  set(LIBRARIES ${LIBRARIES} sqlite3::sqlite3)
-endif()
-
 pkg_check_modules(JSONCPP jsoncpp)
 if(JSONCPP_FOUND)
   include_directories(${JSONCPP_INCLUDE_DIR})
@@ -46,15 +33,7 @@ else()
 endif()
 
 if(WIN32)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy
-    "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/schema.sql"
-    "${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.sql")
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES})
 else()
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES} -ldl)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy
-    "${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/schema.sql"
-    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sql")
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBRARIES} -ldl)
 endif()

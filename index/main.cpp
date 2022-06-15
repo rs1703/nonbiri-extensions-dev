@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include <index/database.h>
 #include <index/extension.h>
 #include <index/utility.h>
 #include <json/json.h>
@@ -87,139 +86,18 @@ void writeIndex(const Json::Value &root)
   out2.close();
 }
 
-std::string getExtensionId(const ExtensionInfo &info)
-{
-  static constexpr const char *sql {"SELECT id FROM extension WHERE domain = ?"};
-  sqlite3_stmt *stmt = nullptr;
-
-  int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 1, info.domain.c_str(), -1, SQLITE_STATIC);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_step(stmt);
-
-  int64_t id {};
-  if (exit == SQLITE_ROW)
-    id = sqlite3_column_int64(stmt, 0);
-  sqlite3_finalize(stmt);
-  if (exit != SQLITE_ROW && exit != SQLITE_DONE)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  return std::to_string(id);
-}
-
-bool hasExtension(const ExtensionInfo &info)
-{
-  static constexpr const char *sql {"SELECT 1 FROM extension WHERE domain = ?"};
-  sqlite3_stmt *stmt = nullptr;
-
-  int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 1, info.domain.c_str(), -1, SQLITE_STATIC);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_step(stmt);
-  if (exit != SQLITE_ROW && exit != SQLITE_DONE)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  return exit == SQLITE_ROW;
-}
-
-std::string addExtension(const ExtensionInfo &info)
-{
-  static constexpr const char *sql {"INSERT INTO extension (domain) VALUES (?)"};
-  sqlite3_stmt *stmt = nullptr;
-
-  int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 1, info.domain.c_str(), -1, SQLITE_STATIC);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_step(stmt);
-
-  int64_t id {};
-  if (exit == SQLITE_DONE)
-    id = sqlite3_last_insert_rowid(Database::instance);
-  sqlite3_finalize(stmt);
-  if (exit != SQLITE_DONE)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  return std::to_string(id);
-}
-
-std::string updateExtension(const ExtensionInfo &info)
-{
-  static constexpr const char *sql {
-    "UPDATE extension SET obsolete = 0"
-    " WHERE domain = ?",
-  };
-  sqlite3_stmt *stmt = nullptr;
-
-  int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 1, info.domain.c_str(), -1, SQLITE_STATIC);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_step(stmt);
-  sqlite3_finalize(stmt);
-  if (exit != SQLITE_DONE)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  return getExtensionId(info);
-}
-
-void removeExtension(const std::string &id)
-{
-  static constexpr const char *sql {
-    "UPDATE extension SET obsolete = 1"
-    " WHERE id = ?",
-  };
-  sqlite3_stmt *stmt = nullptr;
-
-  int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_int64(stmt, 1, std::stoll(id));
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_step(stmt);
-  sqlite3_finalize(stmt);
-  if (exit != SQLITE_DONE)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-}
-
 int main()
 {
   std::vector<ExtensionInfo> extensions {};
   try {
-    Database::initialize();
-    extensions = loadExtensions();
-  } catch (std::exception &e) {
-    std::cerr << e.what() << std::endl;
-    throw;
-  }
+    auto extensions = loadExtensions();
 
-  Database::Tx t;
-  try {
     Json::Value root {};
-    for (const auto &info : extensions) {
-      std::string id {};
-      if (hasExtension(info))
-        id = updateExtension(info);
-      else
-        id = addExtension(info);
-      root[id] = info.toJson();
-    }
-
-    Json::Value index = readIndex();
-    for (const auto &id : index.getMemberNames())
-      if (!root.isMember(id))
-        removeExtension(id);
+    for (const auto &info : extensions)
+      root[info.domain] = info.toJson();
 
     writeIndex(root);
-  } catch (const std::exception &e) {
-    t.rollback();
+  } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
     throw;
   }

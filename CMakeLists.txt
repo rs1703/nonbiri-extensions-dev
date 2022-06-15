@@ -12,18 +12,16 @@ set(baseVer 1.0)
 
 # Deps =======================================
 
-file(GLOB GUMBO_QUERY_SOURCES libs/nonbiri-core-dev/libs/gumbo-query/src/*.cpp)
-file(GLOB CORE_SOURCES libs/nonbiri-core-dev/core/*.cpp libs/nonbiri-core-dev/core/*/*.cpp)
+file(GLOB CORE_SOURCES 
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/core/*.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/core/*/*.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/libs/gumbo-query/src/*.cpp)
+set(DEPENDENCIES ${CORE_SOURCES})
 
-set(DEPENDENCIES
-  ${GUMBO_QUERY_SOURCES}
-  ${CORE_SOURCES})
-
-file(GLOB EXTENSIONS extensions/*)
 include_directories(
-  ${EXTENSIONS}
-  libs/nonbiri-core-dev/libs
-  libs/nonbiri-core-dev)
+  ${CMAKE_CURRENT_LIST_DIR}/extensions
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/libs)
 
 # Packages ===================================
 
@@ -62,7 +60,7 @@ endif()
 
 # Extensions =======================================
 
-file(GLOB EXT_DIRS extensions/*/*)
+file(GLOB EXT_DIRS ${CMAKE_CURRENT_LIST_DIR}/extensions/*)
 foreach(CURRENT_EXT_DIR ${EXT_DIRS})
   unset(EXT_SOURCES)
   unset(EXT_DEFINITIONS)

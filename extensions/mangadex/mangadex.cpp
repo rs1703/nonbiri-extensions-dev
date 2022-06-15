@@ -7,7 +7,7 @@
 
 RegisterExtension(MangaDex);
 
-MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {id}
+MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {domain}
 {
   client.setRateLimiter(new Http::RateLimiter(5));
   client.setDefaultHeader("Referer", baseUrl + "/");

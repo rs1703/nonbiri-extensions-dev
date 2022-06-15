@@ -11,9 +11,7 @@ include(FindPkgConfig)
 
 # Main =======================================
 
-include_directories(
-  ${CMAKE_CURRENT_LIST_DIR}
-  libs/stduuid/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 file(GLOB SOURCES ${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}/*.cpp)
 add_executable(${PROJECT_NAME} ${DEPS} ${SOURCES})

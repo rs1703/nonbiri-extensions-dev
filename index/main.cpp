@@ -9,10 +9,8 @@
 #include <index/extension.h>
 #include <index/utility.h>
 #include <json/json.h>
-#include <uuid.h>
 
 namespace fs = std::filesystem;
-using namespace uuids;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 static const std::string platform {"windows"};
@@ -102,18 +100,18 @@ std::string getExtensionId(const ExtensionInfo &info)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
   exit = sqlite3_step(stmt);
 
-  std::string id {};
+  int64_t id {};
   if (exit == SQLITE_ROW)
-    id = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+    id = sqlite3_column_int64(stmt, 0);
   sqlite3_finalize(stmt);
   if (exit != SQLITE_ROW && exit != SQLITE_DONE)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  return id;
+  return std::to_string(id);
 }
 
 bool hasExtension(const ExtensionInfo &info)
 {
-  static constexpr const char *sql {"SELECT id FROM extension WHERE domain = ?"};
+  static constexpr const char *sql {"SELECT 1 FROM extension WHERE domain = ?"};
   sqlite3_stmt *stmt = nullptr;
 
   int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
@@ -130,31 +128,24 @@ bool hasExtension(const ExtensionInfo &info)
 
 std::string addExtension(const ExtensionInfo &info)
 {
-  static constexpr const char *sql {"INSERT INTO extension (id, domain) VALUES (?, ?)"};
+  static constexpr const char *sql {"INSERT INTO extension (domain) VALUES (?)"};
   sqlite3_stmt *stmt = nullptr;
-
-  std::random_device rd;
-  auto seed_data = std::array<int, std::mt19937::state_size> {};
-  std::generate(std::begin(seed_data), std::end(seed_data), std::ref(rd));
-  std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
-  std::mt19937 generator(seq);
-  uuids::uuid_random_generator gen {generator};
-  auto id = uuids::to_string(gen());
 
   int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
   if (exit != SQLITE_OK)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_STATIC);
-  if (exit != SQLITE_OK)
-    throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 2, info.domain.c_str(), -1, SQLITE_STATIC);
+  exit = sqlite3_bind_text(stmt, 1, info.domain.c_str(), -1, SQLITE_STATIC);
   if (exit != SQLITE_OK)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
   exit = sqlite3_step(stmt);
+
+  int64_t id {};
+  if (exit == SQLITE_DONE)
+    id = sqlite3_last_insert_rowid(Database::instance);
   sqlite3_finalize(stmt);
   if (exit != SQLITE_DONE)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  return id;
+  return std::to_string(id);
 }
 
 std::string updateExtension(const ExtensionInfo &info)
@@ -189,7 +180,7 @@ void removeExtension(const std::string &id)
   int exit = sqlite3_prepare_v2(Database::instance, sql, -1, &stmt, nullptr);
   if (exit != SQLITE_OK)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
-  exit = sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_STATIC);
+  exit = sqlite3_bind_int64(stmt, 1, std::stoll(id));
   if (exit != SQLITE_OK)
     throw std::runtime_error(sqlite3_errmsg(Database::instance));
   exit = sqlite3_step(stmt);

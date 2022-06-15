@@ -2,6 +2,7 @@ name: Build Index
 
 on:
   pull_request:
+    branches: [index]
   push:
     branches: [index]
 

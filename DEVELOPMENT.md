@@ -90,67 +90,67 @@ Http is a wrapper around the CURL library.
   - `string body`
   - `long statusCode`
 - `Http::Interceptor` - A base class for intercepting requests and responses
-  - Derived class should implement `intercept(Chain&)` method
+  - Derived class should implement `intercept(Http::Interceptor::Chain&)` method
 - `Http::Interceptor::Chain`
   - `request()` - returns a reference to the original `Http::Request`
+    - Any changes to the object will be reflected in the original request
   - `proceed()` - will process the `Http::Request` and return a pointer to `Http::Response`
-    - Since `request()` returns a reference, you don't need to pass it to `proceed()`
     - Can only be called once, otherwise it will do nothing and will always return `nullptr`
 - `Http::RateLimiter`
   - The constructor takes two parameters:
     - `int64_t size` - the maximum number of requests
     - `int64_t duration` - the time period in seconds, default to 1s
     - example: `RateLimiter(10, 1)` - which means 10 requests per second
-- `Http::Client`- A class which provides a simple interface for making HTTP requests
-  - `get(string url, Headers = {})` - returns a pointer to `Http::Response`
-  - `post(string url, string body, Headers = {})` - returns a pointer to `Http::Response`
-  - `send(Request&)` - returns a pointer to `Http::Response`
+- `Http::Client` - A class which provides a simple interface for making HTTP requests
+  - `get(string url, Http::Headers = {})` - returns a pointer to `Http::Response`
+  - `post(string url, string body, Http::Headers = {})` - returns a pointer to `Http::Response`
+  - `send(Http::Request&)` - returns a pointer to `Http::Response`
   - `download(string url, string outputPath)` - returns a `long` which is the status code of the request
-  - `setRateLimiter(RateLimiter)`
+  - `setRateLimiter(Http::RateLimiter)`
   - `setDefaultHeader(string name, string value)`
   - `removeDefaultHeader(string name)`
-  - `addInterceptor(Interceptor)`
+  - `addInterceptor(Http::Interceptor)`
 
 ## Call Flow
 
 #### 1. Latest Manga
 
-Invoked when the user opens the extensions. The app calls `Extension::getLatests(page)`, which should return `tuple<vector<Manga_t>, hasNextPage>`. The method has a different implementation depending on the base class.
+Invoked when the user opens the extensions. The app calls `Extension::getLatests(int page)`, which should return `tuple<vector<Manga_t>, bool hasNextPage>`. The method has a different implementation depending on the base class.
 
-- HttpExtension will call `latestsRequest(page)`, which should return `Response`
-  - The `Response` will be passed to `parseLatestEntries(response)`, which should return `tuple<vector<Manga_t>, hasNextPage>`
-- ParsedExtension will call `latestsRequest(page)`, which should return `Response`
-  - The `Response` will be parsed as HTML and will either
-    - Call `parseLatestEntries(html)`, which should return `tuple<vector<Manga_t>, hasNextPage>` - _if the method has been implemented_
+- HttpExtension will call `latestsRequest(int page)`, which should return a pointer to `Http::Response`
+  - `Http::Response` will be passed to `parseLatestEntries(Http::Response&)`, which should return `tuple<vector<Manga_t>, bool hasNextPage>`
+- ParsedExtension will call `latestsRequest(int page)`, which should return a pointer to `Http::Response`
+  - `Http::Response` will be parsed as HTML and will either
+    - Call `parseLatestEntries(HTML&)`, which should return `tuple<vector<Manga_t>, bool hasNextPage>` - _if the method has been implemented_
     - Or call `latestsSelector()`, which should return a CSS selector
-      - The CSS selector will be used to extract the elements from the HTML, which then will be iterated over and passed to `parseLatestEntry(element)`, which should return `Manga_t`, resulting in `vector<Manga_t>`
+      - The CSS selector will be used to extract the elements from the HTML, which then will be iterated over and passed to `parseLatestEntry(Element&)`, which should return a pointer to `Manga_t`, resulting in `vector<Manga_t>`
       - Then call `latestsNextSelector()` and check if there is a next page, resulting in `hasNextPage`
 
 #### 2. Search Manga
 
-Invoked when the user searches for a manga or applies a filter. The app calls `Extension::searchManga(page, query, filters)`, which should return `tuple<vector<Manga_t>, hasNextPage>`. The method has a different implementation depending on the base class, but the flow should be similar to _Latest Manga_.
+Invoked when the user searches for a manga or applies a filter. The app calls `Extension::searchManga(string page, string query, vector<pair<string, string> filters)`, which should return `tuple<vector<Manga_t>, bool hasNextPage>`. The method has a different implementation depending on the base class, but the flow should be similar to _Latest Manga_.
 
 #### 3. Get Manga
 
-Invoked when the user opens the manga page. The app calls `Extension::getManga(path)`, which should return `Manga_t`. The method has a different implementation depending on the base class.
+Invoked when the user opens the manga page. The app calls `Extension::getManga(string path)`, which should return a pointer to `Manga_t`. The method has a different implementation depending on the base class.
 
-- HttpExtension will call `mangaRequest(path)`, which should return `Response`
-  - The `Response` will be passed to `parseManga(response)`, which should return `Manga_t`
-- ParsedExtension will call `mangaRequest(path)` which should return a `Response`
-  - The `Response` will be parsed as HTML and passed to `parseManga(html)`, which should return `Manga_t`
+- HttpExtension will call `mangaRequest(string path)`, which should return a pointer to `Http::Response`
+  - `Http::Response` will be passed to `parseManga(Http::Response&)`, which should return a pointer to `Manga_t`
+- ParsedExtension will call `mangaRequest(string path)` which should return a `Http::Response`
+  - `Http::Response` will be parsed as HTML and passed to `parseManga(HTML&)`, which should return a pointer to `Manga_t`
 
 #### 4. Get Chapters
 
-Also invoked when the user opens the manga page, usually invoked after _Get Manga_. The app calls `Extension::getChapters(Manga_t)` or `Extension::getChapters(path)`, which should return `vector<Chapter_t>`. The method has a different implementation depending on the base class, but the flow should be similar to _Latest Manga_ and _Search Manga_ except the _hasNextPage_ and _nextSelector_ parts.
+Also invoked when the user opens the manga page, usually invoked after _Get Manga_. The app calls `Extension::getChapters(Manga_t&)` or `Extension::getChapters(string path)`, which should return `vector<Chapter_t>`. The method has a different implementation depending on the base class, but the flow should be similar to _Latest Manga_ and _Search Manga_ except the _hasNextPage_ and _nextSelector_ parts.
 
 #### 5. Get Pages
 
-Invoked when the user opens the chapter page. The app calls `Extension::getPages(path)`, which should return `vector<string>`. The method has a different implementation depending on the base class.
+Invoked when the user opens the chapter page. The app calls `Extension::getPages(string path)`, which should return `vector<string>`. The method has a different implementation depending on the base class.
 
-- HttpExtension will call `pagesRequest(path)`, which should return `Response`
-  - The `Response` will be passed to `parsePages(response)`, which should return `vector<string>`
-- ParsedExtension will call `pagesRequest(path)` which should return a `Response`
-  - The `Response` will be parsed as HTML and passed to `parsePages(html)`, which should return `vector<string>`
+- HttpExtension will call `pagesRequest(string path)`, which should return a pointer to `Http::Response`
+  - `Http::Response` will be passed to `parsePages(Http::Response)`, which should return `vector<string>`
+- ParsedExtension will call `pagesRequest(string path)` which should return a pointer to `Http::Response`
+  - `Http::Response` will be parsed as HTML and passed to `parsePages(HTML&)`, which should return `vector<string>`
 
 ## Filters
 

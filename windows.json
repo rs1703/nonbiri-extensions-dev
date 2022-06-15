@@ -1,0 +1,16 @@
+{
+   "1" : {
+      "isNsfw" : true,
+      "language" : "en",
+      "name" : "Koushoku",
+      "path" : "windows/koushoku.org-v1.0.1.dll",
+      "version" : "1.0.1"
+   },
+   "2" : {
+      "isNsfw" : true,
+      "language" : "all",
+      "name" : "MangaDex",
+      "path" : "windows/mangadex.org-v1.0.1.dll",
+      "version" : "1.0.1"
+   }
+}

@@ -1,9 +1,9 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <index/database.h>
 #include <index/extension.h>

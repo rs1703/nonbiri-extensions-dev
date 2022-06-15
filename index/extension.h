@@ -19,6 +19,7 @@ struct ExtensionInfo
   Json::Value toJson() const
   {
     Json::Value root {};
+    root["domain"] = domain;
     root["name"] = name;
     root["language"] = language;
     root["version"] = version;

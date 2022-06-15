@@ -15,19 +15,19 @@ MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {domain}
   Prefs::add(new Pref::ExcludableCheckbox {
     Language::excludedKey,
     {
-      .key     = Language::key,
-      .title   = Language::title,
+      .key = Language::key,
+      .title = Language::title,
       .options = optionsToPairs(Language::options),
     },
   });
 
   Prefs::add(new Pref::Checkbox {{
-    .key     = ContentRating::key,
-    .title   = ContentRating::title,
-    .value   = stringsToJson({
-        ContentRating::options[0].key,
-        ContentRating::options[1].key,
-        ContentRating::options[2].key,
+    .key = ContentRating::key,
+    .title = ContentRating::title,
+    .value = stringsToJson({
+      ContentRating::options[0].key,
+      ContentRating::options[1].key,
+      ContentRating::options[2].key,
     }),
     .options = optionsToPairs(ContentRating::options),
   }});
@@ -35,8 +35,8 @@ MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {domain}
   Prefs::add(new Pref::ExcludableCheckbox {
     Tag::excludedKey,
     {
-      .key     = Tag::key,
-      .title   = Tag::title,
+      .key = Tag::key,
+      .title = Tag::title,
       .options = optionsToPairs(Tag::options),
     },
   });
@@ -45,39 +45,39 @@ MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {domain}
   filters.add(new Filter::ExcludableCheckbox {
     Language::excludedKey,
     {
-      .key     = Language::key,
-      .title   = Language::title,
+      .key = Language::key,
+      .title = Language::title,
       .options = Language::options,
     },
   });
 
   filters.add(new Filter::Checkbox {{
-    .key     = ContentRating::key,
-    .title   = ContentRating::title,
+    .key = ContentRating::key,
+    .title = ContentRating::title,
     .options = ContentRating::options,
   }});
 
   filters.add(new Filter::Checkbox {{
-    .key     = Demographic::key,
-    .title   = Demographic::title,
+    .key = Demographic::key,
+    .title = Demographic::title,
     .options = Demographic::options,
   }});
 
   filters.add(new Filter::Checkbox {{
-    .key     = Status::key,
-    .title   = Status::title,
+    .key = Status::key,
+    .title = Status::title,
     .options = Status::options,
   }});
 
   filters.add(new Filter::Select {{
-    .key     = Sort::key,
-    .title   = Sort::title,
+    .key = Sort::key,
+    .title = Sort::title,
     .options = Sort::options,
   }});
 
   filters.add(new Filter::Select {{
-    .key     = Order::key,
-    .title   = Order::title,
+    .key = Order::key,
+    .title = Order::title,
     .options = Order::options,
   }});
 
@@ -85,8 +85,8 @@ MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {domain}
   filters.add(new Filter::ExcludableCheckbox {
     Tag::excludedKey,
     {
-      .key     = Tag::key,
-      .title   = Tag::title,
+      .key = Tag::key,
+      .title = Tag::title,
       .options = Tag::options,
     },
   });
@@ -275,10 +275,10 @@ void applyExcludable(
     std::string key {};
     std::string valueKey {};
     if (json.isArray()) {
-      key      = ppref->excludedKey;
+      key = ppref->excludedKey;
       valueKey = json[0].asString();
     } else {
-      key      = pref->key;
+      key = pref->key;
       valueKey = json.asString();
     }
 

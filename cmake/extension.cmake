@@ -34,7 +34,11 @@ endif()
 
 file(GLOB EXT_SOURCES ${CURRENT_EXT_DIR}/*.cpp)
 add_library(${domain} SHARED ${DEPENDENCIES} ${EXT_SOURCES})
-target_link_libraries(${domain} PRIVATE ${LIBRARIES})
+if(WIN32)
+  target_link_libraries(${domain} PRIVATE ${LIBRARIES})
+else()
+  target_link_libraries(${domain} PRIVATE ${LIBRARIES} -ldl)
+endif()
 
 target_compile_definitions(${domain} PRIVATE ${EXT_DEFINITIONS})
 target_compile_features(${domain} PRIVATE cxx_std_20)

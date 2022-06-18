@@ -16,6 +16,10 @@ else()
   message(FATAL_ERROR "name is not defined")
 endif()
 
+if(DEFINED description)
+  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} EXTENSION_DESCRIPTION="${description}")
+endif()
+
 if(DEFINED language)
   set(EXT_DEFINITIONS ${EXT_DEFINITIONS} EXTENSION_LANGUAGE="${language}")
 else()
@@ -29,7 +33,7 @@ else()
 endif()
 
 if(DEFINED isNsfw)
-  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} EXTENSION_IS_NSFW=1)
+  set(EXT_DEFINITIONS ${EXT_DEFINITIONS} EXTENSION_NSFW=1)
 endif()
 
 file(GLOB EXT_SOURCES ${CURRENT_EXT_DIR}/*.cpp)

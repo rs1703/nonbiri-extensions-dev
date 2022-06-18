@@ -10,6 +10,7 @@ struct ExtensionInfo
   std::string domain {};
   std::string baseUrl {};
   std::string name {};
+  std::string description {};
   std::string language {};
   std::string version {};
   bool isNsfw {};
@@ -20,10 +21,13 @@ struct ExtensionInfo
   {
     Json::Value root {};
     root["name"] = name;
+    if (!description.empty())
+      root["description"] = description;
     root["language"] = language;
     root["version"] = version;
     root["path"] = path;
-    root["isNsfw"] = isNsfw;
+    if (isNsfw)
+      root["isNsfw"] = true;
     return root;
   }
 };

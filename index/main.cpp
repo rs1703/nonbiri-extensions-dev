@@ -45,6 +45,7 @@ std::vector<ExtensionInfo> loadExtensions()
       .domain = ext->domain,
       .baseUrl = ext->baseUrl,
       .name = ext->name,
+      .description = ext->description,
       .language = ext->language,
       .version = ext->version,
       .isNsfw = ext->isNsfw,

@@ -8,7 +8,6 @@
       "version" : "1.0.1"
    },
    "mangadex.org" : {
-      "description" : "One-stop shop for english-translated licensed hentai manga and doujinshi",
       "isNsfw" : true,
       "language" : "all",
       "name" : "MangaDex",

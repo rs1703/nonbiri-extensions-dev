@@ -1,16 +1,16 @@
 {
    "koushoku.org" : {
       "isNsfw" : true,
-      "language" : "en",
+      "language" : "One-stop shop for english-translated licensed hentai manga and doujinshi",
       "name" : "Koushoku",
       "path" : "windows/koushoku.org-v1.0.1.dll",
-      "version" : "1.0.1"
+      "version" : "en"
    },
    "mangadex.org" : {
       "isNsfw" : true,
-      "language" : "all",
+      "language" : "One-stop shop for english-translated licensed hentai manga and doujinshi",
       "name" : "MangaDex",
       "path" : "windows/mangadex.org-v1.0.1.dll",
-      "version" : "1.0.1"
+      "version" : "all"
    }
 }

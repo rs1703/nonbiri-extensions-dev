@@ -6,30 +6,28 @@ const char *thumbnailSelector = ".thumbnail img";
 
 RegisterExtension(Koushoku);
 
-Koushoku::Koushoku() : ParsedExtension {}
+Koushoku::Koushoku() : ParsedExtension(), Filters()
 {
   client.setRateLimiter(new Http::RateLimiter(5));
-
-  filters.add(new Filter::Select {{
+  Filters::add(new Select {{
     .key = "sort",
     .title = "Sort",
     .options =
       {
-        {"ID", "id"},
-        {"Title", "title"},
-        {"Created Date", "created_at", Filter::State::Enabled},
-        {"Uploaded Date", "published_at"},
-        {"Pages", "pages"},
+        {.title = "Title", .value = "title"},
+        {.title = "Created Date", .value = "created_at", .defaultState = State::ON},
+        {.title = "Uploaded Date", .value = "created_at"},
+        {.title = "Pages", .value = "pages"},
       },
   }});
 
-  filters.add(new Filter::Select {{
+  Filters::add(new Select {{
     .key = "order",
     .title = "Order",
     .options =
       {
-        {"Ascending", "asc"},
-        {"Descending", "desc", Filter::State::Enabled},
+        {.title = "Ascending", .value = "asc"},
+        {.title = "Descending", .value = "desc", .defaultState = State::ON},
       },
   }});
 }

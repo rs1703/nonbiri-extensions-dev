@@ -2,10 +2,11 @@
 #define MANGADEX_MANGADEX_H_
 
 #include <core/extension.h>
-#include <core/pref.h>
+#include <core/filters.h>
+#include <core/prefs.h>
 #include <json/json.h>
 
-struct MangaDex : public HttpExtension, Pref::Prefs
+struct MangaDex : public HttpExtension, Filters, Prefs
 {
   MangaDex();
 

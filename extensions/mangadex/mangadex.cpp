@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <core/utility.h>
 #include <mangadex/constants.h>
 #include <mangadex/mangadex.h>
@@ -7,89 +5,76 @@
 
 RegisterExtension(MangaDex);
 
-MangaDex::MangaDex() : HttpExtension(), Pref::Prefs {domain}
+MangaDex::MangaDex() : HttpExtension(), Filters(), Prefs(domain)
 {
   client.setRateLimiter(new Http::RateLimiter(5));
   client.setDefaultHeader("Referer", baseUrl + "/");
 
-  Prefs::add(new Pref::ExcludableCheckbox {
-    Language::excludedKey,
-    {
-      .key = Language::key,
-      .title = Language::title,
-      .options = optionsToPairs(Language::options),
-    },
-  });
+  Prefs::add(new TriState({
+    .key = Language::key,
+    .excludedKey = Language::excludedKey,
+    .title = Language::title,
+    .options = Language::options,
+  }));
 
-  Prefs::add(new Pref::Checkbox {{
-    .key = ContentRating::key,
-    .title = ContentRating::title,
-    .value = stringsToJson({
-      ContentRating::options[0].key,
-      ContentRating::options[1].key,
-      ContentRating::options[2].key,
-    }),
-    .options = optionsToPairs(ContentRating::options),
-  }});
-
-  Prefs::add(new Pref::ExcludableCheckbox {
-    Tag::excludedKey,
-    {
-      .key = Tag::key,
-      .title = Tag::title,
-      .options = optionsToPairs(Tag::options),
-    },
-  });
-
-  filters.add(new Filter::Hidden {Language::excludedKey});
-  filters.add(new Filter::ExcludableCheckbox {
-    Language::excludedKey,
-    {
-      .key = Language::key,
-      .title = Language::title,
-      .options = Language::options,
-    },
-  });
-
-  filters.add(new Filter::Checkbox {{
+  Prefs::add(new Checkbox({
     .key = ContentRating::key,
     .title = ContentRating::title,
     .options = ContentRating::options,
-  }});
+  }));
 
-  filters.add(new Filter::Checkbox {{
+  Prefs::add(new TriState({
+    .key = Tag::key,
+    .excludedKey = Tag::excludedKey,
+    .title = Tag::title,
+    .options = Tag::options,
+  }));
+
+  Filters::add(new Filter::Hidden(Language::excludedKey));
+  Filters::add(new TriState({
+    .key = Language::key,
+    .excludedKey = Language::excludedKey,
+    .title = Language::title,
+    .options = Language::options,
+  }));
+
+  Filters::add(new Checkbox({
+    .key = ContentRating::key,
+    .title = ContentRating::title,
+    .options = ContentRating::options,
+  }));
+
+  Filters::add(new Checkbox({
     .key = Demographic::key,
     .title = Demographic::title,
     .options = Demographic::options,
-  }});
+  }));
 
-  filters.add(new Filter::Checkbox {{
+  Filters::add(new Checkbox({
     .key = Status::key,
     .title = Status::title,
     .options = Status::options,
-  }});
+  }));
 
-  filters.add(new Filter::Select {{
+  Filters::add(new Select({
     .key = Sort::key,
     .title = Sort::title,
     .options = Sort::options,
-  }});
+  }));
 
-  filters.add(new Filter::Select {{
+  Filters::add(new Select({
     .key = Order::key,
     .title = Order::title,
     .options = Order::options,
-  }});
+  }));
 
-  filters.add(new Filter::Hidden {Tag::excludedKey});
-  filters.add(new Filter::ExcludableCheckbox {
-    Tag::excludedKey,
-    {
-      .key = Tag::key,
-      .title = Tag::title,
-      .options = Tag::options,
-    },
-  });
+  Filters::add(new Filter::Hidden(Tag::excludedKey));
+  Filters::add(new TriState({
+    .key = Tag::key,
+    .excludedKey = Tag::excludedKey,
+    .title = Tag::title,
+    .options = Tag::options,
+  }));
 }
 
 std::shared_ptr<Http::Response> MangaDex::latestsRequest(int page) const
@@ -249,64 +234,44 @@ std::vector<std::string> MangaDex::parsePages(const Http::Response &respose) con
   return pages;
 }
 
-void applyGeneric(SearchParams &searchParams,
-  const std::shared_ptr<Pref::Pref> &pref,
-  const std::vector<Filter::Option> &options,
-  const std::map<std::string, size_t> &index)
+void applyState(SearchParams &searchParams, const StateObject *pref)
 {
-  if (pref == nullptr)
-    return;
-
-  for (const auto &value : pref->value) {
-    const auto it = index.find(value.asString());
-    if (it != index.end())
-      searchParams.add(pref->key, options[it->second].value);
+  if (pref != nullptr) {
+    for (const auto &option : pref->options) {
+      if (option.state == State::ON)
+        searchParams.add(option.key.empty() ? pref->key : option.key, option.value);
+    }
   }
 }
 
-void applyExcludable(
-  SearchParams &searchParams, Pref::Pref *pref, const std::vector<Filter::Option> &options, const std::map<std::string, size_t> &index)
+void applyTriState(SearchParams &searchParams, const TriState *pref)
 {
-  if (pref == nullptr)
-    return;
-
-  auto ppref = dynamic_cast<const Pref::ExcludableCheckbox *>(pref);
-  for (const auto &json : pref->value) {
-    std::string key {};
-    std::string valueKey {};
-    if (json.isArray()) {
-      key = ppref->excludedKey;
-      valueKey = json[0].asString();
-    } else {
-      key = pref->key;
-      valueKey = json.asString();
+  if (pref != nullptr) {
+    for (const auto &option : pref->options) {
+      searchParams.add(option.state == State::EX ? pref->excludedKey : option.key.empty() ? pref->key : option.key, option.value);
     }
-
-    const auto it = index.find(valueKey);
-    if (it != index.end())
-      searchParams.add(key, options[it->second].value);
   }
 }
 
 void MangaDex::applyLanguagePref(SearchParams &searchParams) const
 {
-  const auto pref = Prefs::get(Language::key);
-  if (pref != nullptr && !pref->value.empty())
-    applyExcludable(searchParams, pref.get(), Language::options, Language::index);
+  auto pref = Prefs::get<TriState>(Language::key);
+  if (pref != nullptr)
+    applyTriState(searchParams, pref);
 }
 
 void MangaDex::applyContentRatingPref(SearchParams &searchParams) const
 {
-  const auto pref = Prefs::get(ContentRating::key);
-  if (pref != nullptr && !pref->value.empty())
-    applyExcludable(searchParams, pref.get(), ContentRating::options, ContentRating::index);
+  const auto pref = Prefs::get<Checkbox>(ContentRating::key);
+  if (pref != nullptr)
+    applyState(searchParams, pref);
 }
 
 void MangaDex::applyTagPref(SearchParams &searchParams) const
 {
-  const auto pref = Prefs::get(Tag::key);
-  if (pref != nullptr && !pref->value.empty())
-    applyExcludable(searchParams, pref.get(), Tag::options, Tag::index);
+  const auto pref = Prefs::get<TriState>(Tag::key);
+  if (pref != nullptr)
+    applyTriState(searchParams, pref);
 }
 
 void MangaDex::applyPrefs(SearchParams &searchParams) const

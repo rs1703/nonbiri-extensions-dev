@@ -2,8 +2,9 @@
 #define KOUSHOKU_KOUSHOKU_H_
 
 #include <core/extension.h>
+#include <core/filters.h>
 
-struct Koushoku : public ParsedExtension
+struct Koushoku : public ParsedExtension, public Filters
 {
   Koushoku();
 

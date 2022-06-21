@@ -57,7 +57,7 @@ Manga::Manga(Json::Value &json, bool full)
 
   for (auto &rel : rels) {
     const std::string type = rel["type"].asString();
-    auto &attrs            = rel["attributes"];
+    auto &attrs = rel["attributes"];
 
     if (type == Constants::coverArt) {
       const auto fileName = attrs["fileName"].asString();
@@ -91,9 +91,10 @@ Manga::Manga(Json::Value &json, bool full)
     for (auto &tag : tags) {
       const std::string id = tag["id"].asString();
       if (!id.empty()) {
-        const auto &it = Tag::map.find(id);
-        if (it != Tag::map.end())
-          genres.push_back(it->second);
+        const auto it =
+          std::find_if(Tag::options.begin(), Tag::options.end(), [&id](const StateOption &option) { return option.value == id; });
+        if (it != Tag::options.end())
+          genres.push_back(it->title);
       }
     }
   }
@@ -142,12 +143,12 @@ Chapter::Chapter(Json::Value &json)
   if (id.empty())
     throw std::runtime_error("'id' not found");
 
-  path        = "/chapter/" + id;
+  path = "/chapter/" + id;
   publishedAt = parseDateString(attributes["publishAt"].asString()) * 1000;
 
-  const std::string volume  = attributes["volume"].asString();
+  const std::string volume = attributes["volume"].asString();
   const std::string chapter = attributes["chapter"].asString();
-  const std::string title   = attributes["title"].asString();
+  const std::string title = attributes["title"].asString();
 
   if (!volume.empty())
     name = "Vol. " + volume;
@@ -163,7 +164,7 @@ Chapter::Chapter(Json::Value &json)
 
   for (auto &rel : rels) {
     const std::string type = rel["type"].asString();
-    auto &attrs            = rel["attributes"];
+    auto &attrs = rel["attributes"];
 
     if (type == Constants::manga) {
       mangaId = rel["id"].asString();

@@ -64,6 +64,7 @@ file(GLOB EXT_DIRS ${CMAKE_CURRENT_LIST_DIR}/extensions/*)
 foreach(CURRENT_EXT_DIR ${EXT_DIRS})
   unset(EXT_SOURCES)
   unset(EXT_DEFINITIONS)
+  unset(EXT_CUSTOM_SOURCES)
 
   unset(domain)
   unset(baseUrl)

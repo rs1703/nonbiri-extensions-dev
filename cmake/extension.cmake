@@ -37,7 +37,7 @@ if(DEFINED isNsfw)
 endif()
 
 file(GLOB EXT_SOURCES ${CURRENT_EXT_DIR}/*.cpp)
-add_library(${domain} SHARED ${DEPENDENCIES} ${EXT_SOURCES})
+add_library(${domain} SHARED ${DEPENDENCIES} ${EXT_SOURCES} ${EXT_CUSTOM_SOURCES})
 if(WIN32)
   target_link_libraries(${domain} PRIVATE ${LIBRARIES})
 else()

@@ -91,7 +91,7 @@ Manga::Manga(HTML &html, const std::string &path)
     coverUrl = style.substr(style.find("(") + 1, style.find(")") - style.find("(") - 1);
     fixCover(coverUrl);
   }
-  title = html.selectFirst("#gj")->text();
+  title = html.selectFirst("#gn")->text();
   status = MangaStatus::Completed;
 }
 

@@ -1,6 +1,22 @@
 {
+   "e-hentai.org" : {
+      "description" : "With more than half a million absolutely free hentai doujinshi, manga, cosplay and CG galleries, E-Hentai Galleries is the world's largest free Hentai archive.",
+      "isNsfw" : true,
+      "language" : "all",
+      "name" : "E-Hentai",
+      "path" : "windows/e-hentai.org-v1.0.1.dll",
+      "version" : "1.0.1"
+   },
+   "exhentai.org" : {
+      "description" : "With more than half a million absolutely free hentai doujinshi, manga, cosplay and CG galleries, E-Hentai Galleries is the world's largest free Hentai archive.",
+      "isNsfw" : true,
+      "language" : "all",
+      "name" : "ExHentai",
+      "path" : "windows/exhentai.org-v1.0.1.dll",
+      "version" : "1.0.1"
+   },
    "koushoku.org" : {
-      "description" : "One-stop shop for english-translated licensed hentai manga and doujinshi",
+      "description" : "One-stop shop for english-translated licensed hentai manga and doujinshi.",
       "isNsfw" : true,
       "language" : "en",
       "name" : "Koushoku",

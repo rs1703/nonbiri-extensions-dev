@@ -1,4 +1,3 @@
-
 #include <ehentai/constants.h>
 #include <ehentai/ehentai.h>
 #include <ehentai/models.h>
@@ -107,6 +106,7 @@ std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> EHentai::getLatests(int 
   HTML html {res->body};
   return parseEntries(html);
 }
+
 std::tuple<std::vector<std::shared_ptr<Manga_t>>, bool> EHentai::searchManga(
   int page, const std::string &query, const std::vector<std::pair<std::string, std::string>> &filters) const
 {
@@ -166,4 +166,5 @@ std::vector<std::shared_ptr<Chapter_t>> EHentai::getChapters(const Manga_t &mang
 std::vector<std::string> EHentai::getPages(const std::string &) const
 {
   // TODO
+  return {};
 }

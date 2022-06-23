@@ -8,22 +8,6 @@ HunterGate(
 
 project(nonbiri-dev LANGUAGES C CXX)
 include(FindPkgConfig)
-set(baseVer 1.0)
-
-# Deps =======================================
-
-file(GLOB CORE_SOURCES 
-  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/core/*.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/core/*/*.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/libs/gumbo-query/src/*.cpp)
-set(DEPENDENCIES ${CORE_SOURCES})
-
-include_directories(
-  ${CMAKE_CURRENT_LIST_DIR}/extensions
-  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev
-  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/libs)
-
-# Packages ===================================
 
 pkg_check_modules(CURL libcurl)
 if(NOT CURL_FOUND)
@@ -58,7 +42,18 @@ else()
   set(LIBRARIES ${LIBRARIES} gumbo::gumbo)
 endif()
 
-# Extensions =======================================
+file(GLOB CORE_SOURCES 
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/core/*.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/core/*/*.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/libs/gumbo-query/src/*.cpp)
+set(DEPENDENCIES ${CORE_SOURCES})
+
+include_directories(
+  ${CMAKE_CURRENT_LIST_DIR}/extensions
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev
+  ${CMAKE_CURRENT_LIST_DIR}/libs/nonbiri-core-dev/libs)
+
+set(baseVer 1.0)
 
 file(GLOB EXT_DIRS ${CMAKE_CURRENT_LIST_DIR}/extensions/*)
 foreach(CURRENT_EXT_DIR ${EXT_DIRS})

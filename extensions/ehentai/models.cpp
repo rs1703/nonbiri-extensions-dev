@@ -23,7 +23,7 @@ void fixCover(std::string &url)
     return;
 
   static constexpr const char *exh = "exhentai.org";
-  static constexpr const size_t exhLen = strlen(exh);
+  static const size_t exhLen = 12;
   if (!url.empty()) {
     if (auto pos = url.find(exh); pos != std::string::npos)
       url.replace(pos, exhLen, "ehgt.org");

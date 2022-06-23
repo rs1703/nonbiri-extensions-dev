@@ -248,7 +248,11 @@ void applyTriState(SearchParams &searchParams, const TriState *pref)
 {
   if (pref != nullptr) {
     for (const auto &option : pref->options) {
-      searchParams.add(option.state == State::EX ? pref->excludedKey : option.key.empty() ? pref->key : option.key, option.value);
+      if (option.state == State::ON) {
+        searchParams.add(option.key.empty() ? pref->key : option.key, option.value);
+      } else if (option.state == State::EX) {
+        searchParams.add(pref->excludedKey, option.value);
+      }
     }
   }
 }

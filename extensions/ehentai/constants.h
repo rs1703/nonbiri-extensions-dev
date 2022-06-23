@@ -13,7 +13,7 @@ constexpr const char *rk {"f_sr"};
 constexpr const char *rdk {"f_srdd"};
 
 constexpr const char* delim = " | ";
-constexpr const int delimLen = 3;
+constexpr const size_t delimLen = 3;
 const int ct {1023};
 }  // namespace Constants
 

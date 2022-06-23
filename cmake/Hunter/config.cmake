@@ -1,17 +1,14 @@
 hunter_config(
   OpenSSL
-  VERSION 1.1.1j
-)
+  VERSION 1.1.1j)
 
 hunter_config(
   gumbo
-  VERSION 0.10.1
-)
+  VERSION 0.10.1)
 
 hunter_config(
   jsoncpp
-  VERSION 1.8.0
-)
+  VERSION 1.8.0)
 
 hunter_config(
   CURL
@@ -22,5 +19,4 @@ hunter_config(
     BUILD_CURL_EXE=OFF
     CMAKE_USE_OPENSSL=ON
     CMAKE_USE_LIBSSH2=OFF
-    BUILD_TESTING=OFF
-)
+    BUILD_TESTING=OFF)
